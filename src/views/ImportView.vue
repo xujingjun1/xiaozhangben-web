@@ -251,6 +251,11 @@ const tempApiKey = ref('')
 const tempSecretKey = ref('')
 const ocrEngine = ref<'baidu' | 'local'>(localStorage.getItem('ocr_engine') as any || 'baidu')
 
+function setOcrEngine(engine: 'baidu' | 'local') {
+  ocrEngine.value = engine
+  localStorage.setItem('ocr_engine', engine)
+}
+
 function saveBaiduConfig() {
   localStorage.setItem('baidu_api_key', tempApiKey.value)
   localStorage.setItem('baidu_secret_key', tempSecretKey.value)
@@ -799,12 +804,12 @@ const modes: { key: ImportMode; label: string; icon: string }[] = [
           </div>
           <div class="flex items-center gap-1 bg-surface rounded-xl p-0.5">
             <button
-              @click="ocrEngine = 'baidu'; localStorage.setItem('ocr_engine', 'baidu')"
+              @click="setOcrEngine('baidu')"
               class="px-3 py-1 rounded-lg text-xs font-medium transition-all"
               :class="ocrEngine === 'baidu' ? 'bg-white text-primary shadow-sm' : 'text-txt-hint'"
             >百度云</button>
             <button
-              @click="ocrEngine = 'local'; localStorage.setItem('ocr_engine', 'local')"
+              @click="setOcrEngine('local')"
               class="px-3 py-1 rounded-lg text-xs font-medium transition-all"
               :class="ocrEngine === 'local' ? 'bg-white text-primary shadow-sm' : 'text-txt-hint'"
             >本地</button>

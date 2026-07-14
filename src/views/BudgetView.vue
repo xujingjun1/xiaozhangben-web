@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useExpenseStore } from '@/stores/expense'
-import { formatMoney, getCategoryInfo } from '@/utils/helpers'
+import { formatMoney, getCategoryInfo, categories } from '@/utils/helpers'
 import dayjs from 'dayjs'
 import type { Budget } from '@/db'
 
