@@ -1,0 +1,446 @@
+import express from 'express'
+import cors from 'cors'
+import crypto from 'crypto'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const DATA_DIR = path.join(__dirname, 'data')
+const DB_FILE = path.join(DATA_DIR, 'db.json')
+
+const app = express()
+const PORT = 3001
+
+app.use(cors())
+app.use(express.json({ limit: '10mb' }))
+
+// ========== FILE STORAGE ==========
+if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true })
+
+function loadDB() {
+  if (!fs.existsSync(DB_FILE)) {
+    return { users: [], expenses: [], budgets: [], ratings: [], feedbacks: [] }
+  }
+  const db = JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'))
+  // 确保新字段存在
+  if (!db.ratings) db.ratings = []
+  if (!db.feedbacks) db.feedbacks = []
+  return db
+}
+
+function saveDB(data) {
+  fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8')
+}
+
+function genId() { return crypto.randomUUID() }
+
+function hashPassword(password) {
+  return crypto.createHash('sha256').update(password).digest('hex')
+}
+
+// Auth middleware
+function authMiddleware(req, res, next) {
+  const userId = req.headers['x-user-id']
+  if (!userId) return res.status(401).json({ error: '未登录' })
+  const db = loadDB()
+  const user = db.users.find(u => u.id === userId)
+  if (!user) return res.status(401).json({ error: '用户不存在' })
+  req.userId = userId
+  next()
+}
+
+// ========== AUTH ==========
+
+// 注册
+app.post('/api/auth/register', (req, res) => {
+  const { username, password } = req.body
+  console.log(`\n[注册请求] 昵称: "${username}", 密码长度: ${password?.length || 0}`)
+
+  if (!username || username.trim().length < 1) {
+    console.log('[注册失败] 昵称为空')
+    return res.status(400).json({ error: '请输入昵称' })
+  }
+  if (!password || password.length < 6) {
+    console.log(`[注册失败] 密码不足6位, 实际: ${password?.length || 0}`)
+    return res.status(400).json({ error: '密码至少6位' })
+  }
+
+  const db = loadDB()
+  console.log(`[注册] 数据库用户数: ${db.users.length}`)
+
+  const existing = db.users.find(u => u.username === username)
+  if (existing) {
+    console.log(`[注册失败] 昵称 "${username}" 已存在, ID: ${existing.id}`)
+    return res.status(400).json({ error: '该昵称已被注册' })
+  }
+
+  const user = {
+    id: genId(),
+    username: username.trim(),
+    password: hashPassword(password),
+    nickname: username.trim(),
+    createdAt: new Date().toISOString(),
+  }
+
+  db.users.push(user)
+  saveDB(db)
+
+  console.log(`[注册成功] ID: ${user.id}, 昵称: ${user.username}, 新用户数: ${db.users.length}`)
+  res.json({ success: true, user: { id: user.id, username: user.username, nickname: user.nickname } })
+})
+
+// 登录
+app.post('/api/auth/login', (req, res) => {
+  const { username, password } = req.body
+  console.log(`\n[登录请求] 昵称: "${username}", 密码长度: ${password?.length || 0}`)
+
+  if (!username || !password) {
+    console.log(`[登录失败] 参数不完整, username: ${!!username}, password: ${!!password}`)
+    return res.status(400).json({ error: '请填写完整信息' })
+  }
+
+  const db = loadDB()
+  console.log(`[登录] 数据库用户数: ${db.users.length}, 所有昵称: [${db.users.map(u => u.username).join(', ')}]`)
+
+  const user = db.users.find(u => u.username === username)
+  if (!user) {
+    console.log(`[登录失败] 未找到用户 "${username}"`)
+    return res.status(400).json({ error: '账号或密码错误' })
+  }
+
+  const inputHash = hashPassword(password)
+  const storedHash = user.password
+  console.log(`[登录] 找到用户 ID: ${user.id}`)
+  console.log(`[登录] 输入密码哈希: ${inputHash}`)
+  console.log(`[登录] 存储密码哈希: ${storedHash}`)
+  console.log(`[登录] 哈希匹配: ${inputHash === storedHash}`)
+
+  if (inputHash !== storedHash) {
+    console.log(`[登录失败] 密码不匹配`)
+    return res.status(400).json({ error: '账号或密码错误' })
+  }
+
+  console.log(`[登录成功] ID: ${user.id}, 昵称: ${user.username}`)
+  res.json({ success: true, user: { id: user.id, username: user.username, nickname: user.nickname } })
+})
+
+// ========== RESET PASSWORD ==========
+app.post('/api/auth/reset-password', (req, res) => {
+  const { username, newPassword } = req.body
+  console.log(`\n[重置密码] 昵称: "${username}", 新密码长度: ${newPassword?.length || 0}`)
+
+  if (!username || !newPassword) {
+    return res.status(400).json({ error: '请填写完整信息' })
+  }
+  if (newPassword.length < 6) {
+    return res.status(400).json({ error: '密码至少6位' })
+  }
+
+  const db = loadDB()
+  const user = db.users.find(u => u.username === username)
+  if (!user) {
+    console.log(`[重置密码失败] 未找到用户 "${username}"`)
+    return res.status(400).json({ error: '账号不存在' })
+  }
+
+  user.password = hashPassword(newPassword)
+  saveDB(db)
+  console.log(`[重置密码成功] 用户: ${username}`)
+  res.json({ success: true, message: '密码重置成功' })
+})
+
+// ========== EXPENSES ==========
+
+app.get('/api/expenses', authMiddleware, (req, res) => {
+  const db = loadDB()
+  const rows = db.expenses
+    .filter(e => e.userId === req.userId)
+    .sort((a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt))
+  res.json(rows)
+})
+
+app.post('/api/expenses', authMiddleware, (req, res) => {
+  const { id, amount, category, description, date, tags, isIncome } = req.body
+  const db = loadDB()
+  const expenseId = id || genId()
+
+  const idx = db.expenses.findIndex(e => e.id === expenseId)
+  const item = {
+    id: expenseId,
+    userId: req.userId,
+    amount,
+    category,
+    description: description || '',
+    date,
+    tags: tags || [],
+    isIncome: !!isIncome,
+    createdAt: idx >= 0 ? db.expenses[idx].createdAt : new Date().toISOString(),
+  }
+
+  if (idx >= 0) db.expenses[idx] = item
+  else db.expenses.push(item)
+
+  saveDB(db)
+  res.json({ success: true, id: expenseId })
+})
+
+app.delete('/api/expenses/:id', authMiddleware, (req, res) => {
+  const db = loadDB()
+  db.expenses = db.expenses.filter(e => !(e.id === req.params.id && e.userId === req.userId))
+  saveDB(db)
+  res.json({ success: true })
+})
+
+// ========== BUDGETS ==========
+
+app.get('/api/budgets', authMiddleware, (req, res) => {
+  const { year, month } = req.query
+  if (!year || !month) return res.json([])
+  const db = loadDB()
+  const rows = db.budgets.filter(b =>
+    b.userId === req.userId && b.year === parseInt(year) && b.month === parseInt(month)
+  )
+  res.json(rows)
+})
+
+app.post('/api/budgets', authMiddleware, (req, res) => {
+  const { category, amount, month, year } = req.body
+  const db = loadDB()
+
+  const idx = db.budgets.findIndex(b =>
+    b.userId === req.userId && b.category === category && b.month === month && b.year === year
+  )
+
+  if (idx >= 0) {
+    db.budgets[idx].amount = amount
+    saveDB(db)
+    res.json({ success: true, id: db.budgets[idx].id })
+  } else {
+    const id = genId()
+    db.budgets.push({ id, userId: req.userId, category, amount, month, year })
+    saveDB(db)
+    res.json({ success: true, id })
+  }
+})
+
+app.delete('/api/budgets/:id', authMiddleware, (req, res) => {
+  const db = loadDB()
+  db.budgets = db.budgets.filter(b => !(b.id === req.params.id && b.userId === req.userId))
+  saveDB(db)
+  res.json({ success: true })
+})
+
+// ========== USER PROFILE ==========
+
+app.get('/api/profile', authMiddleware, (req, res) => {
+  const db = loadDB()
+  const user = db.users.find(u => u.id === req.userId)
+  if (!user) return res.status(404).json({ error: '用户不存在' })
+  res.json(user.profile || { bio: '', birthday: '', hobbies: '', dream: '', nickname: '', avatar: '' })
+})
+
+app.post('/api/profile', authMiddleware, (req, res) => {
+  const { bio, birthday, hobbies, dream, nickname, avatar } = req.body
+  const db = loadDB()
+  const user = db.users.find(u => u.id === req.userId)
+  if (!user) return res.status(404).json({ error: '用户不存在' })
+
+  // 更新 profile
+  user.profile = {
+    bio: bio ?? user.profile?.bio ?? '',
+    birthday: birthday ?? user.profile?.birthday ?? '',
+    hobbies: hobbies ?? user.profile?.hobbies ?? '',
+    dream: dream ?? user.profile?.dream ?? '',
+    nickname: nickname ?? user.profile?.nickname ?? '',
+    avatar: avatar ?? user.profile?.avatar ?? '',
+  }
+  
+  // 同步更新用户昵称
+  if (nickname !== undefined) {
+    user.nickname = nickname
+  }
+  
+  saveDB(db)
+  console.log(`[资料更新] ${user.username}:`, { ...user.profile, avatar: user.avatar ? '(有头像)' : '' })
+  res.json({ success: true, profile: user.profile, nickname: user.nickname })
+})
+
+// ========== EXPORT ==========
+
+app.get('/api/export', authMiddleware, (req, res) => {
+  const db = loadDB()
+  res.json({
+    expenses: db.expenses.filter(e => e.userId === req.userId),
+    budgets: db.budgets.filter(b => b.userId === req.userId),
+    exportDate: new Date().toISOString(),
+  })
+})
+
+// ========== BAIDU OCR ==========
+
+let baiduAccessToken = null
+let baiduTokenExpiry = 0
+
+async function getBaiduAccessToken(apiKey, secretKey) {
+  // 缓存 token（有效期 30 天，这里用 25 天）
+  if (baiduAccessToken && Date.now() < baiduTokenExpiry) {
+    return baiduAccessToken
+  }
+  
+  const url = `https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=${apiKey}&client_secret=${secretKey}`
+  const res = await fetch(url, { method: 'POST' })
+  const data = await res.json()
+  
+  if (data.access_token) {
+    baiduAccessToken = data.access_token
+    baiduTokenExpiry = Date.now() + 25 * 24 * 60 * 60 * 1000
+    console.log('[百度OCR] access_token 获取成功')
+    return baiduAccessToken
+  } else {
+    throw new Error(data.error_description || '获取 access_token 失败')
+  }
+}
+
+// 百度 OCR 识别接口
+app.post('/api/ocr/baidu', async (req, res) => {
+  const { image, apiKey, secretKey, type = 'accurate' } = req.body
+  
+  if (!image || !apiKey || !secretKey) {
+    return res.status(400).json({ error: '缺少必要参数' })
+  }
+  
+  try {
+    console.log(`[百度OCR] 开始识别, 类型: ${type}, 图片大小: ${Math.round(image.length / 1024)}KB`)
+    
+    const token = await getBaiduAccessToken(apiKey, secretKey)
+    
+    // type: standard(标准版) 或 accurate(高精度版)
+    const apiUrl = type === 'accurate'
+      ? `https://aip.baidubce.com/rest/2.0/ocr/v1/accurate_basic?access_token=${token}`
+      : `https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic?access_token=${token}`
+    
+    const ocrRes = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `image=${encodeURIComponent(image)}`,
+    })
+    
+    const ocrData = await ocrRes.json()
+    
+    if (ocrData.error_code) {
+      console.error(`[百度OCR] 识别失败: ${ocrData.error_code} - ${ocrData.error_msg}`)
+      return res.status(400).json({ error: `百度OCR错误: ${ocrData.error_msg}` })
+    }
+    
+    const text = (ocrData.words_result || []).map(item => item.words).join('\n')
+    console.log(`[百度OCR] 识别成功, 共 ${ocrData.words_result?.length || 0} 行, ${text.length} 字符`)
+    
+    res.json({
+      success: true,
+      text,
+      lines: ocrData.words_result || [],
+      wordsNum: ocrData.words_result?.length || 0,
+    })
+  } catch (e) {
+    console.error(`[百度OCR] 请求异常:`, e.message)
+    res.status(500).json({ error: e.message })
+  }
+})
+
+// 百度 OCR 验证密钥接口
+app.post('/api/ocr/verify', async (req, res) => {
+  const { apiKey, secretKey } = req.body
+  try {
+    await getBaiduAccessToken(apiKey, secretKey)
+    res.json({ success: true, message: '密钥验证成功' })
+  } catch (e) {
+    res.status(400).json({ error: e.message })
+  }
+})
+
+// ========== RATINGS ==========
+
+// 提交评分
+app.post('/api/ratings', authMiddleware, (req, res) => {
+  const { rating } = req.body
+  if (!rating || rating < 1 || rating > 5) {
+    return res.status(400).json({ error: '评分必须在1-5之间' })
+  }
+
+  const db = loadDB()
+  const newRating = {
+    id: genId(),
+    userId: req.userId,
+    rating,
+    createdAt: new Date().toISOString(),
+  }
+
+  db.ratings.push(newRating)
+  saveDB(db)
+  console.log(`[评分] 用户 ${req.userId} 评分: ${rating}星`)
+  res.json({ success: true, id: newRating.id })
+})
+
+// 获取所有评分（管理员用）
+app.get('/api/ratings', authMiddleware, (req, res) => {
+  const db = loadDB()
+  const ratings = db.ratings.filter(r => r.userId === req.userId)
+  
+  // 计算平均分
+  const avg = ratings.length > 0 
+    ? (ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length).toFixed(1)
+    : 0
+  
+  res.json({
+    ratings,
+    total: ratings.length,
+    average: parseFloat(avg),
+  })
+})
+
+// ========== FEEDBACKS ==========
+
+// 提交反馈
+app.post('/api/feedbacks', authMiddleware, (req, res) => {
+  const { type, content, contact } = req.body
+  if (!content || content.trim().length === 0) {
+    return res.status(400).json({ error: '反馈内容不能为空' })
+  }
+
+  const db = loadDB()
+  const newFeedback = {
+    id: genId(),
+    userId: req.userId,
+    type: type || '其他',
+    content: content.trim(),
+    contact: contact || '',
+    status: 'pending', // pending, replied, resolved
+    createdAt: new Date().toISOString(),
+  }
+
+  db.feedbacks.push(newFeedback)
+  saveDB(db)
+  console.log(`[反馈] 用户 ${req.userId} 提交${type}反馈`)
+  res.json({ success: true, id: newFeedback.id })
+})
+
+// 获取用户反馈列表
+app.get('/api/feedbacks', authMiddleware, (req, res) => {
+  const db = loadDB()
+  const feedbacks = db.feedbacks
+    .filter(f => f.userId === req.userId)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+  res.json(feedbacks)
+})
+
+// 获取所有反馈（管理员用）
+app.get('/api/feedbacks/all', authMiddleware, (req, res) => {
+  const db = loadDB()
+  const feedbacks = db.feedbacks.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+  res.json(feedbacks)
+})
+
+app.listen(PORT, () => {
+  console.log(`小账本后端运行在 http://localhost:${PORT}`)
+})

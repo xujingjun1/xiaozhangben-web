@@ -1,0 +1,1017 @@
+{
+  "users": [
+    {
+      "id": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "username": "xu",
+      "password": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+      "nickname": "xu",
+      "createdAt": "2026-07-14T02:19:19.871Z"
+    }
+  ],
+  "expenses": [
+    {
+      "id": "mrk0zl9owb08h3",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 10,
+      "category": "餐饮",
+      "description": "",
+      "date": "2026-07-14",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T02:21:57.234Z"
+    },
+    {
+      "id": "761a68fb-3640-4b58-8993-29c123a4860e",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 2024,
+      "category": "餐饮",
+      "description": "午餐 星巴克咖啡 ¥lO.O 麦当劳 滴滴出行 ¥SO ¥B 肯德基 ¥ 瑞幸咖啡 美团外卖 淘宝购物 .年月日 电费 / 停车费 月日 地铁 昨天 晚餐 前天 电影票 微信红包 京东购物 星巴克 . iPhone 总计: 余额: . # 便利店消费 打车去公司 微信支付收款 商户消费 美团外卖 上海市浦东新区张江高科技园区星巴克咖啡店消费 奶茶 早餐",
+      "date": "2026-07-13",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:03:00.249Z"
+    },
+    {
+      "id": "0e2e09eb-37e0-4c48-811c-dfc184999a7a",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 2024,
+      "category": "餐饮",
+      "description": "午餐 星巴克咖啡 ¥lO.O 麦当劳 滴滴出行 ¥SO ¥B 肯德基 ¥ 瑞幸咖啡 美团外卖 淘宝购物 .年月日 电费 / 停车费 月日 地铁 昨天 晚餐 前天 电影票 微信红包 京东购物 星巴克 . iPhone 总计: 余额: . # 便利店消费 打车去公司 微信支付收款 商户消费 美团外卖 上海市浦东新区张江高科技园区星巴克咖啡店消费 奶茶 早餐",
+      "date": "2026-07-13",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:03:41.110Z"
+    },
+    {
+      "id": "2fffc101-0113-492d-b651-6bb25dff6f6c",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 35.5,
+      "category": "餐饮",
+      "description": "星巴克咖啡",
+      "date": "2026-07-02",
+      "tags": [
+        "下午茶"
+      ],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.219Z"
+    },
+    {
+      "id": "4645fa05-45c8-4019-ba91-f6aa669f0d3e",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 128,
+      "category": "餐饮",
+      "description": "海底捞火锅",
+      "date": "2026-07-03",
+      "tags": [
+        "朋友聚会"
+      ],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.222Z"
+    },
+    {
+      "id": "6444b7ec-c688-47b1-b69d-1202c69d9815",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 25,
+      "category": "餐饮",
+      "description": "美团外卖-午餐",
+      "date": "2026-07-05",
+      "tags": [
+        "加班餐"
+      ],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.225Z"
+    },
+    {
+      "id": "bdce7400-2bb0-4df3-ba4a-9ed06e3de580",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 18.5,
+      "category": "餐饮",
+      "description": "瑞幸咖啡",
+      "date": "2026-07-08",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.227Z"
+    },
+    {
+      "id": "7608194c-33a2-49a5-a8fb-d1baaeb6b71a",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 32,
+      "category": "餐饮",
+      "description": "茶百道奶茶",
+      "date": "2026-07-15",
+      "tags": [
+        "下午茶"
+      ],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.229Z"
+    },
+    {
+      "id": "1bc0a0bb-8fd3-4377-97bb-a1c54dd6573a",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 89.9,
+      "category": "餐饮",
+      "description": "必胜客披萨",
+      "date": "2026-07-18",
+      "tags": [
+        "周末"
+      ],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.232Z"
+    },
+    {
+      "id": "9b2c0af7-3a96-425f-b5eb-03e26f400471",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 45,
+      "category": "餐饮",
+      "description": "麦当劳晚餐",
+      "date": "2026-07-10",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.234Z"
+    },
+    {
+      "id": "892f7bd0-fd48-4a85-9c5e-975ee7806e1f",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 68,
+      "category": "餐饮",
+      "description": "老乡鸡午餐",
+      "date": "2026-07-12",
+      "tags": [
+        "周末"
+      ],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.236Z"
+    },
+    {
+      "id": "8b421521-da8a-45e6-aa79-08e09231c434",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 4,
+      "category": "交通",
+      "description": "地铁通勤",
+      "date": "2026-07-01",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.239Z"
+    },
+    {
+      "id": "eff37ab8-5dbe-4fbc-8ab9-d4066d0f93b4",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 32.5,
+      "category": "交通",
+      "description": "滴滴打车",
+      "date": "2026-07-03",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.241Z"
+    },
+    {
+      "id": "07e80c8b-15d5-4f1d-8819-d85f86e01f29",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 4,
+      "category": "交通",
+      "description": "地铁通勤",
+      "date": "2026-07-07",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.243Z"
+    },
+    {
+      "id": "29ebff1d-7faf-4331-acea-60c8afb1aaf5",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 15,
+      "category": "交通",
+      "description": "美团单车",
+      "date": "2026-07-12",
+      "tags": [
+        "周末"
+      ],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.245Z"
+    },
+    {
+      "id": "fce01111-a374-4d98-9dce-a83a1ed9d7a4",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 100,
+      "category": "交通",
+      "description": "羊城通充值",
+      "date": "2026-07-20",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.247Z"
+    },
+    {
+      "id": "06b70173-380f-4f82-abc3-8b298114789e",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 299,
+      "category": "购物",
+      "description": "京东购物-数据线",
+      "date": "2026-07-04",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.249Z"
+    },
+    {
+      "id": "8b8f403a-13df-4efe-aac0-2564b48e39ac",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 156.8,
+      "category": "购物",
+      "description": "永辉超市",
+      "date": "2026-07-09",
+      "tags": [
+        "周末"
+      ],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.251Z"
+    },
+    {
+      "id": "4b2cebbf-3979-4388-a6a8-edfd0b0ee3e0",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 86.5,
+      "category": "购物",
+      "description": "名创优品",
+      "date": "2026-07-14",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.253Z"
+    },
+    {
+      "id": "a2581bd5-d92c-4228-b462-02b4d86915f1",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 459,
+      "category": "购物",
+      "description": "优衣库外套",
+      "date": "2026-07-22",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.255Z"
+    },
+    {
+      "id": "8c299e83-66fd-4637-a008-aa2ff9fd1aed",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 45,
+      "category": "娱乐",
+      "description": "万达影城电影票",
+      "date": "2026-07-06",
+      "tags": [
+        "周末"
+      ],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.257Z"
+    },
+    {
+      "id": "650aa784-7650-4db0-9b43-3d8cf60a3ad3",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 128,
+      "category": "娱乐",
+      "description": "KTV唱歌",
+      "date": "2026-07-13",
+      "tags": [
+        "朋友聚会"
+      ],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.259Z"
+    },
+    {
+      "id": "26364a16-938b-4f35-a47e-ffb601da3780",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 200,
+      "category": "娱乐",
+      "description": "健身房月卡",
+      "date": "2026-07-21",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.261Z"
+    },
+    {
+      "id": "a92335f7-0c41-4fe6-9157-63906c4161f2",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 50,
+      "category": "生活",
+      "description": "中国移动话费",
+      "date": "2026-07-01",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.263Z"
+    },
+    {
+      "id": "727cb760-8c97-4fff-a00f-ac02bf258e3e",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 156,
+      "category": "生活",
+      "description": "电费",
+      "date": "2026-07-05",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.266Z"
+    },
+    {
+      "id": "f91aaaec-c6ac-4e51-9e61-60b45d487f4f",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 35,
+      "category": "生活",
+      "description": "理发店",
+      "date": "2026-07-10",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.268Z"
+    },
+    {
+      "id": "ca9012b9-5866-4ab5-bd4e-6d60e90ecdf6",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 28,
+      "category": "生活",
+      "description": "顺丰快递",
+      "date": "2026-07-16",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.270Z"
+    },
+    {
+      "id": "9fbbe805-21d0-400e-90c8-a0c4965a2910",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 86,
+      "category": "生活",
+      "description": "物业费",
+      "date": "2026-07-25",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.272Z"
+    },
+    {
+      "id": "6bbeb91a-0ec8-430b-897c-6d777a18030e",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 45,
+      "category": "医疗",
+      "description": "药店买药",
+      "date": "2026-07-08",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.274Z"
+    },
+    {
+      "id": "4475123f-1f46-4d08-a922-de9b1ec83308",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 280,
+      "category": "医疗",
+      "description": "牙科诊所",
+      "date": "2026-07-19",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.276Z"
+    },
+    {
+      "id": "98e1f709-5bf0-4ddb-a458-8e6b84563a9f",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 99,
+      "category": "教育",
+      "description": "网易有道网课",
+      "date": "2026-07-11",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.279Z"
+    },
+    {
+      "id": "546dbef1-5542-417a-ab53-b5a1d3d5885a",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 45.5,
+      "category": "教育",
+      "description": "新华书店",
+      "date": "2026-07-23",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.281Z"
+    },
+    {
+      "id": "96825700-c632-4244-82a2-609e339075bd",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 89,
+      "category": "宠物",
+      "description": "猫粮",
+      "date": "2026-07-07",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.283Z"
+    },
+    {
+      "id": "ffb8bb8f-9235-46df-adca-12f930840de4",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 35,
+      "category": "宠物",
+      "description": "宠物驱虫药",
+      "date": "2026-07-17",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.286Z"
+    },
+    {
+      "id": "5f085f88-a4b1-4127-b3fa-57ccadf4b781",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 328,
+      "category": "住宿",
+      "description": "如家酒店",
+      "date": "2026-07-20",
+      "tags": [
+        "出差"
+      ],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:07:12.288Z"
+    },
+    {
+      "id": "4b5799bf-cf05-4c89-aeaf-27cb1fe3c6cc",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 25.5,
+      "category": "餐饮",
+      "description": "星巴克咖啡",
+      "date": "2026-07-14",
+      "tags": [
+        "下午茶"
+      ],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:17:47.457Z"
+    },
+    {
+      "id": "f1bdeed1-0f1f-4c44-8b23-40f795cfcd0a",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 32,
+      "category": "交通",
+      "description": "滴滴打车",
+      "date": "2026-07-14",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:17:47.460Z"
+    },
+    {
+      "id": "e346dfba-d88d-496c-8c14-219ac9339e19",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 99.9,
+      "category": "餐饮",
+      "description": "海底捞火锅",
+      "date": "2026-07-14",
+      "tags": [
+        "朋友聚会"
+      ],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:17:47.463Z"
+    },
+    {
+      "id": "574a1c79-877e-4a8e-9751-967ad41ba076",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 50,
+      "category": "生活",
+      "description": "中国移动话费",
+      "date": "2026-07-01",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:17:47.466Z"
+    },
+    {
+      "id": "a8fcb8fd-69ae-42f9-8726-68bc659844de",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 35.5,
+      "category": "餐饮",
+      "description": "瑞幸咖啡",
+      "date": "2026-07-02",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:17:47.468Z"
+    },
+    {
+      "id": "c8c1633d-8b17-4857-8ca0-be5abaec8a40",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 128,
+      "category": "购物",
+      "description": "京东购物",
+      "date": "2026-07-03",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:17:47.471Z"
+    },
+    {
+      "id": "1de8b585-f728-43f1-adcc-9229825da4dd",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 45,
+      "category": "娱乐",
+      "description": "电影票",
+      "date": "2026-07-04",
+      "tags": [
+        "周末"
+      ],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:17:47.473Z"
+    },
+    {
+      "id": "9196d25e-137e-4a08-97f3-d298deefa9cc",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 68,
+      "category": "餐饮",
+      "description": "老乡鸡午餐",
+      "date": "2026-07-05",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:17:47.476Z"
+    },
+    {
+      "id": "f7414718-2be6-4111-97a1-0f57db6b4767",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 15,
+      "category": "交通",
+      "description": "地铁充值",
+      "date": "2026-07-06",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:17:47.478Z"
+    },
+    {
+      "id": "e9c18d44-efa3-476d-b8be-a432ae6446b1",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 86.5,
+      "category": "购物",
+      "description": "名创优品",
+      "date": "2026-07-07",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:17:47.480Z"
+    },
+    {
+      "id": "57db388b-788e-4778-86e1-7865acd61b6a",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 200,
+      "category": "娱乐",
+      "description": "健身房月卡",
+      "date": "2026-07-08",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:17:47.483Z"
+    },
+    {
+      "id": "f6421aa1-ab00-4ae5-8ecc-224df89f60f7",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 156,
+      "category": "生活",
+      "description": "电费",
+      "date": "2026-07-09",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:17:47.486Z"
+    },
+    {
+      "id": "928781df-1c5d-4f8c-870d-15ce99b276bb",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 38,
+      "category": "餐饮",
+      "description": "麦当劳",
+      "date": "2026-07-10",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:17:47.488Z"
+    },
+    {
+      "id": "7f29de5d-cd2a-4f41-9caa-45187381cab3",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 99,
+      "category": "教育",
+      "description": "网易有道网课",
+      "date": "2026-07-11",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:17:47.490Z"
+    },
+    {
+      "id": "b3e9f559-e0f2-41e0-be1e-6e1c410e7f33",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 89,
+      "category": "宠物",
+      "description": "猫粮",
+      "date": "2026-07-12",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:17:47.492Z"
+    },
+    {
+      "id": "cc5b6b10-0bc4-4292-b92d-537f3b7c3857",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 328,
+      "category": "住宿",
+      "description": "如家酒店",
+      "date": "2026-07-13",
+      "tags": [
+        "出差"
+      ],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:17:47.495Z"
+    },
+    {
+      "id": "1150b810-1bc2-462f-ada7-3092514365f8",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 128,
+      "category": "餐饮",
+      "description": "海底捞火锅",
+      "date": "2026-07-02",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.626Z"
+    },
+    {
+      "id": "4bde2974-8d1b-4470-a098-ff8ed83fb186",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 25.5,
+      "category": "餐饮",
+      "description": "星巴克咖啡",
+      "date": "2026-07-05",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.635Z"
+    },
+    {
+      "id": "94dc478e-06c8-4f7f-b9ab-c32602f8a8d5",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 68,
+      "category": "餐饮",
+      "description": "老乡鸡午餐",
+      "date": "2026-07-08",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.645Z"
+    },
+    {
+      "id": "51beb4f6-ff30-4527-b863-825b801c49be",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 89.9,
+      "category": "餐饮",
+      "description": "必胜客披萨",
+      "date": "2026-07-10",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.656Z"
+    },
+    {
+      "id": "592073a4-45c0-4543-929f-921a18f316ec",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 156,
+      "category": "餐饮",
+      "description": "海底捞火锅2",
+      "date": "2026-07-12",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.666Z"
+    },
+    {
+      "id": "44d7d820-9ee5-447c-9139-ba4cc1e2fe50",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 35.5,
+      "category": "餐饮",
+      "description": "瑞幸咖啡",
+      "date": "2026-07-15",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.676Z"
+    },
+    {
+      "id": "a9019c1f-d907-42c2-96e7-1e617fe7d450",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 45,
+      "category": "餐饮",
+      "description": "麦当劳晚餐",
+      "date": "2026-07-18",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.687Z"
+    },
+    {
+      "id": "9ecf5dc8-d18d-498b-a393-09e7ebd6c6cc",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 168,
+      "category": "餐饮",
+      "description": "海底捞火锅3",
+      "date": "2026-07-20",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.698Z"
+    },
+    {
+      "id": "9291e7b9-87c5-465e-b20d-b0851a6d6bba",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 32,
+      "category": "餐饮",
+      "description": "茶百道奶茶",
+      "date": "2026-07-22",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.708Z"
+    },
+    {
+      "id": "378116cf-a71f-4cd2-a39e-7e8b432ff3a5",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 89,
+      "category": "餐饮",
+      "description": "海底捞火锅4",
+      "date": "2026-07-25",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.719Z"
+    },
+    {
+      "id": "9b5c0d23-6c71-4884-ad89-de768d825eda",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 4,
+      "category": "交通",
+      "description": "地铁",
+      "date": "2026-07-01",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.729Z"
+    },
+    {
+      "id": "fbec3dab-3bbb-470e-b9a0-266b67804396",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 32.5,
+      "category": "交通",
+      "description": "滴滴打车",
+      "date": "2026-07-03",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.740Z"
+    },
+    {
+      "id": "f9486e94-41a1-4897-bc1d-106f19b55385",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 100,
+      "category": "交通",
+      "description": "羊城通充值",
+      "date": "2026-07-06",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.750Z"
+    },
+    {
+      "id": "b116cac8-f7f4-4c40-8abb-6fa7252b85e1",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 4,
+      "category": "交通",
+      "description": "地铁",
+      "date": "2026-07-09",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.761Z"
+    },
+    {
+      "id": "1d7b11eb-2387-4ef0-9de0-f608a1c30f56",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 15,
+      "category": "交通",
+      "description": "美团单车",
+      "date": "2026-07-11",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.771Z"
+    },
+    {
+      "id": "eeb28e2d-4138-4812-8614-0747214f199d",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 4,
+      "category": "交通",
+      "description": "地铁",
+      "date": "2026-07-14",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.785Z"
+    },
+    {
+      "id": "8d03e61f-a8f0-461c-9e35-c774af5fd7fc",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 32.5,
+      "category": "交通",
+      "description": "滴滴打车",
+      "date": "2026-07-17",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.798Z"
+    },
+    {
+      "id": "d98c09d7-3455-474c-a375-27e4c82e1c1f",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 4,
+      "category": "交通",
+      "description": "地铁",
+      "date": "2026-07-19",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.810Z"
+    },
+    {
+      "id": "3302dcfa-afe6-433a-953c-c8cf5c74888f",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 4,
+      "category": "交通",
+      "description": "地铁",
+      "date": "2026-07-21",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.823Z"
+    },
+    {
+      "id": "424a978f-8555-4ae7-a6ff-0a0232b60b53",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 100,
+      "category": "交通",
+      "description": "加油",
+      "date": "2026-07-23",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.840Z"
+    },
+    {
+      "id": "d953f00e-d456-43e4-a702-2b2b22c5531c",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 299,
+      "category": "购物",
+      "description": "京东购物",
+      "date": "2026-07-04",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.857Z"
+    },
+    {
+      "id": "7865f328-5cf6-42f1-ac1d-dcaf64f03175",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 156.8,
+      "category": "购物",
+      "description": "永辉超市",
+      "date": "2026-07-07",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.873Z"
+    },
+    {
+      "id": "3b9956c3-59e5-47d0-84e5-df8c16893e04",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 86.5,
+      "category": "购物",
+      "description": "名创优品",
+      "date": "2026-07-13",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.893Z"
+    },
+    {
+      "id": "4730c2bb-a538-42e6-9516-b6ff67dc8bb5",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 45,
+      "category": "娱乐",
+      "description": "电影票",
+      "date": "2026-07-06",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.907Z"
+    },
+    {
+      "id": "1a0fffa1-c6f4-41b5-a1ea-d9a1d6e59ec7",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 128,
+      "category": "娱乐",
+      "description": "KTV唱歌",
+      "date": "2026-07-13",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.922Z"
+    },
+    {
+      "id": "ffa26ca0-2f19-458b-b8b3-9dea01206abe",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 50,
+      "category": "生活",
+      "description": "话费",
+      "date": "2026-07-01",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.939Z"
+    },
+    {
+      "id": "c908b4af-f2dc-4215-acfa-f2712991e945",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 156,
+      "category": "生活",
+      "description": "电费",
+      "date": "2026-07-05",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.952Z"
+    },
+    {
+      "id": "d3340454-d4a9-4c85-a95a-4eb98ae1b4d0",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 35,
+      "category": "生活",
+      "description": "理发",
+      "date": "2026-07-10",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:04.967Z"
+    },
+    {
+      "id": "9c097e7a-200a-4747-9a3c-98b51d4411bf",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 28,
+      "category": "生活",
+      "description": "快递",
+      "date": "2026-07-16",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:05.000Z"
+    },
+    {
+      "id": "7a43cad8-3b56-4783-89fe-fd6ee122e60d",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 86,
+      "category": "生活",
+      "description": "物业费",
+      "date": "2026-07-20",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:05.038Z"
+    },
+    {
+      "id": "7d360050-441e-481b-b418-4221917828c0",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 100,
+      "category": "生活",
+      "description": "水费燃气",
+      "date": "2026-07-25",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:05.053Z"
+    },
+    {
+      "id": "1133db60-7285-49e6-9a86-e4907a37428e",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 45,
+      "category": "医疗",
+      "description": "药店",
+      "date": "2026-07-08",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:05.071Z"
+    },
+    {
+      "id": "80eb9dbb-e087-44ad-8cd4-fea627fcdd7a",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "amount": 280,
+      "category": "医疗",
+      "description": "牙科诊所",
+      "date": "2026-07-19",
+      "tags": [],
+      "isIncome": false,
+      "createdAt": "2026-07-14T03:22:05.086Z"
+    }
+  ],
+  "budgets": [
+    {
+      "id": "ae454d51-6540-49b3-a1d0-04418f6c4035",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "category": "餐饮",
+      "amount": 1500,
+      "month": 7,
+      "year": 2026
+    },
+    {
+      "id": "badbe73a-8789-43ed-a319-c9d09855aa1b",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "category": "交通",
+      "amount": 500,
+      "month": 7,
+      "year": 2026
+    },
+    {
+      "id": "c166ba62-ec6c-4920-bbac-79f25f7f32c0",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "category": "购物",
+      "amount": 2000,
+      "month": 7,
+      "year": 2026
+    },
+    {
+      "id": "f273340b-7a9b-490b-8c31-cfcc5cf2aacc",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "category": "娱乐",
+      "amount": 800,
+      "month": 7,
+      "year": 2026
+    },
+    {
+      "id": "f8ae47f2-9e08-45c5-a852-c7298cdabff1",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "category": "生活",
+      "amount": 1200,
+      "month": 7,
+      "year": 2026
+    },
+    {
+      "id": "689a9ec3-88c2-479d-81c2-8a00da698f54",
+      "userId": "34c65cec-e6b9-4510-b641-2a06fd973160",
+      "category": "医疗",
+      "amount": 500,
+      "month": 7,
+      "year": 2026
+    }
+  ]
+}
