@@ -12,7 +12,14 @@ const DB_FILE = path.join(DATA_DIR, 'db.json')
 const app = express()
 const PORT = process.env.PORT || 3001
 
-app.use(cors())
+app.use(cors({
+  origin: [
+    'https://xiaozhangben-web.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3001',
+  ],
+  credentials: true,
+}))
 app.use(express.json({ limit: '10mb' }))
 
 // ========== FILE STORAGE ==========
