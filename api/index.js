@@ -50,6 +50,11 @@ function authMiddleware(req, res, next) {
   next()
 }
 
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() })
+})
+
 // ========== AUTH ==========
 
 // 注册
