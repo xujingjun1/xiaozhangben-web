@@ -1,0 +1,13 @@
+{
+  "name": "xiaozhangben-api",
+  "type": "module",
+  "scripts": {
+    "dev": "node index.js",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "tencentcloud-sdk-nodejs": "^4.1.267"
+  }
+}

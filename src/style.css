@@ -1,0 +1,179 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: #F8F6FF;
+  color: #2D2B55;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* ===== 深色模式（参考QQ深色风格） ===== */
+html.dark body {
+  background: #111827;
+  color: #f0f0f0;
+}
+
+/* 卡片/白色背景 → 深蓝灰 */
+html.dark .bg-white {
+  background-color: #1f2937 !important;
+}
+
+/* 输入框/浅色背景 → 稍深 */
+html.dark .bg-surface {
+  background-color: #374151 !important;
+}
+
+/* 主文字 → 纯白 */
+html.dark .text-txt {
+  color: #f9fafb !important;
+}
+
+/* 次要文字 → 深色凸出 */
+html.dark .text-txt-secondary {
+  color: #1f2937 !important;
+}
+
+/* 提示文字 → 中灰 */
+html.dark .text-txt-hint {
+  color: #6b7280 !important;
+}
+
+/* 灰色背景 */
+html.dark .bg-gray-200 {
+  background-color: #4b5563 !important;
+}
+
+html.dark .bg-gray-100 {
+  background-color: #374151 !important;
+}
+
+/* 页面标题 → 深色凸出 */
+html.dark h1,
+html.dark h2,
+html.dark .text-2xl,
+html.dark .text-xl {
+  color: #1f2937 !important;
+}
+
+/* 区域小标题（个人资料、数据管理等）→ 紫色凸出 */
+html.dark .font-semibold {
+  color: #818cf8 !important;
+}
+
+/* 分类卡片 → 深色但有层次 */
+html.dark .rounded-2xl {
+  background-color: #1f2937 !important;
+}
+
+/* 小图标背景 → 半透明提亮 */
+html.dark .rounded-xl {
+  background-color: rgba(99, 102, 241, 0.15) !important;
+}
+
+/* 图标文字 → 白色 */
+html.dark .text-txt-secondary {
+  color: #d1d5db !important;
+}
+
+/* 支出金额 → 红色 */
+html.dark .text-expense {
+  color: #f87171 !important;
+}
+
+/* 收入金额 → 绿色 */
+html.dark .text-income {
+  color: #34d399 !important;
+}
+
+/* 标签背景 */
+html.dark .bg-primary\/10 {
+  background-color: rgba(99, 102, 241, 0.2) !important;
+}
+
+/* 分割线 */
+html.dark .divide-surface > * + * {
+  border-color: #374151 !important;
+}
+
+html.dark .bg-surface\/50 {
+  background-color: rgba(55, 65, 81, 0.5) !important;
+}
+
+/* 每日名言 */
+html.dark .from-primary\/5 {
+  background-color: rgba(99, 102, 241, 0.1) !important;
+}
+
+html.dark .border-primary\/10 {
+  border-color: rgba(99, 102, 241, 0.2) !important;
+}
+
+/* 按钮文字 → 保持白色 */
+html.dark .text-white {
+  color: #ffffff !important;
+}
+
+/* 渐变按钮背景 → 保持紫色 */
+html.dark .from-primary {
+  --tw-gradient-from: #6C63FF !important;
+}
+
+html.dark .to-primary-light {
+  --tw-gradient-to: #9D97FF !important;
+}
+
+::-webkit-scrollbar { width: 0; height: 0; }
+
+input, textarea {
+  font-family: 'Noto Sans SC', sans-serif;
+}
+
+.material-icons-round {
+  font-family: 'Material Icons Round';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 隐藏滚动条但保留滑动功能 */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* 弹窗动画 */
+@keyframes slide-up {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.animate-slide-up { animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.2s ease;
+}
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
