@@ -15,7 +15,6 @@ dist-ssr
 # 环境变量文件（包含密钥）
 .env
 .env.local
-.env.production
 api/.env
 
 # Editor directories and files
