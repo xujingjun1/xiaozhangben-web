@@ -453,6 +453,18 @@ app.get('/api/feedbacks/all', authMiddleware, (req, res) => {
   res.json(feedbacks)
 })
 
-app.listen(PORT, () => {
+// 错误处理
+process.on('uncaughtException', (err) => {
+  console.error('未捕获的异常:', err)
+})
+process.on('unhandledRejection', (reason) => {
+  console.error('未处理的 Promise 拒绝:', reason)
+})
+
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`小账本后端运行在 http://localhost:${PORT}`)
+})
+
+server.on('error', (err) => {
+  console.error('服务器错误:', err)
 })
