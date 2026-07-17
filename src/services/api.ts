@@ -1,5 +1,5 @@
 const isProd = import.meta.env.PROD
-const BASE_URL = import.meta.env.VITE_API_URL || (isProd ? 'https://xiaozhangben-web-production.up.railway.app/api' : 'http://localhost:3001/api')
+const BASE_URL = import.meta.env.VITE_API_URL || (isProd ? '/api' : 'http://localhost:3001/api')
 
 function getUserId(): string | null {
   return localStorage.getItem('user_id')

@@ -8,6 +8,7 @@
     "dev:api": "cd api && node index.js",
     "dev:all": "concurrently \"npm run dev:api\" \"npm run dev\"",
     "build": "vue-tsc -b && vite build",
+    "start": "node server.js",
     "preview": "vite preview",
     "check": "vue-tsc -b",
     "lint": "eslint . --ext .ts,.vue",
@@ -16,8 +17,10 @@
   "dependencies": {
     "chart.js": "^4.4.1",
     "clsx": "^2.1.1",
+    "cors": "^2.8.6",
     "dayjs": "^1.11.10",
     "dexie": "^4.0.4",
+    "express": "^4.22.2",
     "lucide-vue-next": "^0.511.0",
     "pinia": "^2.3.1",
     "tailwind-merge": "^3.3.0",
