@@ -8,7 +8,11 @@
       "destination": "/api/$1"
     },
     {
-      "source": "/((?!api/|landing).*)",
+      "source": "/landing(.*)",
+      "destination": "/landing.html"
+    },
+    {
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ]
