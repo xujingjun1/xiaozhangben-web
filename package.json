@@ -7,7 +7,7 @@
     "dev": "vite",
     "dev:api": "cd api && node index.js",
     "dev:all": "concurrently \"npm run dev:api\" \"npm run dev\"",
-    "build": "vue-tsc -b && vite build",
+    "build": "vite build",
     "start": "node server.js",
     "preview": "vite preview",
     "check": "vue-tsc -b",
