@@ -937,7 +937,23 @@
       cursor: pointer;
     }
 
-    /* Responsive */
+    /* Mobile Navigation Overlay */
+    .nav-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 998;
+    }
+
+    .nav-overlay.active {
+      display: block;
+    }
+
+    /* Responsive - Tablet */
     @media (max-width: 768px) {
       .nav {
         padding: 15px 20px;
@@ -945,14 +961,46 @@
 
       .nav-links {
         display: none;
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 280px;
+        height: 100vh;
+        background: var(--bg-dark);
+        flex-direction: column;
+        padding: 80px 30px 30px;
+        gap: 20px;
+        z-index: 999;
+        border-left: 1px solid rgba(255,255,255,0.1);
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+      }
+
+      .nav-links.active {
+        display: flex;
+        transform: translateX(0);
+      }
+
+      .nav-links a {
+        font-size: 1.1rem;
+        padding: 10px 0;
       }
 
       .mobile-menu-btn {
         display: block;
       }
 
+      .mobile-menu-btn.active {
+        content: '✕';
+      }
+
+      .nav-cta {
+        display: none;
+      }
+
       .hero {
-        padding: 120px 20px 60px;
+        padding: 100px 20px 60px;
+        min-height: auto;
       }
 
       .hero-content {
@@ -963,6 +1011,7 @@
 
       .hero-subtitle {
         margin: 0 auto 30px;
+        font-size: 1rem;
       }
 
       .hero-buttons {
@@ -971,6 +1020,11 @@
 
       .hero-stats {
         justify-content: center;
+        gap: 30px;
+      }
+
+      .stat-number {
+        font-size: 1.5rem;
       }
 
       .hero-visual {
@@ -978,11 +1032,21 @@
       }
 
       .phone-mockup {
-        width: 250px;
-        height: 500px;
+        width: 220px;
+        height: 440px;
+        border-radius: 30px;
+      }
+
+      .phone-notch {
+        width: 120px;
+        height: 25px;
       }
 
       .floating-card {
+        display: none;
+      }
+
+      .scroll-indicator {
         display: none;
       }
 
@@ -994,9 +1058,19 @@
         padding: 60px 20px;
       }
 
+      .features-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .feature-card {
+        padding: 30px;
+      }
+
       .step {
         flex-direction: column !important;
         text-align: center;
+        gap: 20px;
       }
 
       .step-number {
@@ -1004,6 +1078,28 @@
         height: 60px;
         min-width: 60px;
         font-size: 1.5rem;
+      }
+
+      .screenshots-scroll {
+        gap: 20px;
+        padding: 20px 0;
+      }
+
+      .screenshot-card {
+        flex: 0 0 240px;
+      }
+
+      .screenshot-img {
+        height: 320px;
+      }
+
+      .testimonials-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .testimonial-card {
+        padding: 30px;
       }
 
       .download-buttons {
@@ -1015,6 +1111,117 @@
         width: 100%;
         max-width: 300px;
         justify-content: center;
+        padding: 16px 30px;
+      }
+
+      .footer {
+        padding: 40px 20px 20px;
+      }
+
+      .footer-content {
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+      }
+
+      .footer-brand {
+        grid-column: span 2;
+      }
+
+      .back-to-top {
+        bottom: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+        font-size: 1.3rem;
+      }
+    }
+
+    /* Responsive - Small Mobile */
+    @media (max-width: 480px) {
+      .hero {
+        padding: 90px 16px 40px;
+      }
+
+      .hero-title {
+        font-size: 2rem;
+      }
+
+      .hero-badge {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+      }
+
+      .btn-primary,
+      .btn-secondary {
+        padding: 14px 28px;
+        font-size: 1rem;
+      }
+
+      .hero-stats {
+        gap: 20px;
+      }
+
+      .stat-item {
+        min-width: 70px;
+      }
+
+      .phone-mockup {
+        width: 180px;
+        height: 360px;
+        border-radius: 24px;
+      }
+
+      .section-title {
+        font-size: 1.6rem;
+      }
+
+      .section-subtitle {
+        font-size: 0.95rem;
+      }
+
+      .feature-card {
+        padding: 24px;
+      }
+
+      .feature-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.3rem;
+        margin-bottom: 16px;
+      }
+
+      .feature-title {
+        font-size: 1.1rem;
+      }
+
+      .step-title {
+        font-size: 1.2rem;
+      }
+
+      .screenshot-card {
+        flex: 0 0 200px;
+      }
+
+      .screenshot-img {
+        height: 260px;
+        font-size: 3rem;
+      }
+
+      .download-title {
+        font-size: 1.6rem;
+      }
+
+      .download-subtitle {
+        font-size: 1rem;
+      }
+
+      .footer-content {
+        grid-template-columns: 1fr;
+        gap: 25px;
+      }
+
+      .footer-brand {
+        grid-column: span 1;
       }
     }
 
@@ -1108,6 +1315,9 @@
   </style>
 </head>
 <body>
+  <!-- Navigation Overlay -->
+  <div class="nav-overlay" id="navOverlay"></div>
+
   <!-- Navigation -->
   <nav class="nav" id="navbar">
     <div class="nav-content">
@@ -1115,7 +1325,7 @@
         <div class="logo-icon">💰</div>
         小账本
       </a>
-      <ul class="nav-links">
+      <ul class="nav-links" id="navLinks">
         <li><a href="#features">功能特点</a></li>
         <li><a href="#how-it-works">使用方法</a></li>
         <li><a href="#screenshots">应用截图</a></li>
@@ -1503,20 +1713,34 @@
       observer.observe(el);
     });
 
-    // Mobile menu (simple toggle)
+    // Mobile menu
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const navLinks = document.querySelector('.nav-links');
+    const navLinks = document.getElementById('navLinks');
+    const navOverlay = document.getElementById('navOverlay');
 
-    mobileMenuBtn.addEventListener('click', () => {
-      navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
-      navLinks.style.position = 'absolute';
-      navLinks.style.top = '100%';
-      navLinks.style.left = '0';
-      navLinks.style.right = '0';
-      navLinks.style.flexDirection = 'column';
-      navLinks.style.background = 'rgba(15, 14, 23, 0.95)';
-      navLinks.style.padding = '20px';
-      navLinks.style.gap = '15px';
+    function toggleMenu() {
+      const isActive = navLinks.classList.contains('active');
+      navLinks.classList.toggle('active');
+      navOverlay.classList.toggle('active');
+      mobileMenuBtn.classList.toggle('active');
+      mobileMenuBtn.textContent = isActive ? '☰' : '✕';
+      document.body.style.overflow = isActive ? '' : 'hidden';
+    }
+
+    function closeMenu() {
+      navLinks.classList.remove('active');
+      navOverlay.classList.remove('active');
+      mobileMenuBtn.classList.remove('active');
+      mobileMenuBtn.textContent = '☰';
+      document.body.style.overflow = '';
+    }
+
+    mobileMenuBtn.addEventListener('click', toggleMenu);
+    navOverlay.addEventListener('click', closeMenu);
+
+    // Close menu when clicking nav links
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', closeMenu);
     });
   </script>
 </body>
