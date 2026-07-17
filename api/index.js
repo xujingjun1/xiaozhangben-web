@@ -13,11 +13,7 @@ const app = express()
 const PORT = process.env.PORT || 3001
 
 app.use(cors({
-  origin: [
-    'https://xiaozhangben-web.vercel.app',
-    'http://localhost:5173',
-    'http://localhost:3001',
-  ],
+  origin: true,
   credentials: true,
 }))
 app.use(express.json({ limit: '10mb' }))
