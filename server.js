@@ -10,7 +10,7 @@ const DATA_DIR = path.join(__dirname, 'data')
 const DB_FILE = path.join(DATA_DIR, 'db.json')
 
 const app = express()
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 8080
 
 app.use(cors({ origin: true, credentials: true }))
 app.use(express.json({ limit: '10mb' }))
