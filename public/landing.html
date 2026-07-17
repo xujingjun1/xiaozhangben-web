@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小账本 - 智能记账助手</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #6C63FF;
+      --primary-dark: #5A52D5;
+      --secondary: #FF6584;
+      --accent: #00D2FF;
+      --bg-dark: #0F0E17;
+      --bg-card: #1A1932;
+      --text-primary: #FFFFFF;
+      --text-secondary: #A0A0B0;
+      --gradient-1: linear-gradient(135deg, #6C63FF 0%, #FF6584 100%);
+      --gradient-2: linear-gradient(135deg, #00D2FF 0%, #6C63FF 100%);
+      --gradient-3: linear-gradient(135deg, #FF6584 0%, #FFB199 100%);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Navigation */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 20px 40px;
+      background: rgba(15, 14, 23, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      transition: all 0.3s ease;
+    }
+
+    .nav.scrolled {
+      padding: 15px 40px;
+      background: rgba(15, 14, 23, 0.95);
+    }
+
+    .nav-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--gradient-1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-primary);
+    }
+
+    .nav-cta {
+      padding: 10px 24px;
+      background: var(--gradient-1);
+      border: none;
+      border-radius: 25px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .nav-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(108, 99, 255, 0.4);
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 40px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 50%, rgba(108, 99, 255, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 50%, rgba(255, 101, 132, 0.1) 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(-2%, 2%); }
+    }
+
+    .hero-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-text {
+      animation: slideInLeft 1s ease-out;
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(108, 99, 255, 0.15);
+      border: 1px solid rgba(108, 99, 255, 0.3);
+      border-radius: 25px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--primary);
+      margin-bottom: 24px;
+    }
+
+    .hero-badge::before {
+      content: '✨';
+    }
+
+    .hero-title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 40px;
+      max-width: 500px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      padding: 16px 36px;
+      background: var(--gradient-1);
+      border: none;
+      border-radius: 30px;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(108, 99, 255, 0.4);
+    }
+
+    .btn-secondary {
+      padding: 16px 36px;
+      background: transparent;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 30px;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--primary);
+      background: rgba(108, 99, 255, 0.1);
+      transform: translateY(-3px);
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 40px;
+      margin-top: 50px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      background: var(--gradient-2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 5px;
+    }
+
+    .hero-visual {
+      position: relative;
+      animation: slideInRight 1s ease-out;
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .phone-mockup {
+      width: 300px;
+      height: 600px;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 40px;
+      border: 3px solid rgba(255,255,255,0.1);
+      box-shadow: 
+        0 50px 100px rgba(0,0,0,0.3),
+        0 0 0 1px rgba(255,255,255,0.05),
+        inset 0 0 0 1px rgba(255,255,255,0.05);
+      position: relative;
+      overflow: hidden;
+      margin: 0 auto;
+    }
+
+    .phone-notch {
+      width: 150px;
+      height: 30px;
+      background: #0F0E17;
+      border-radius: 0 0 20px 20px;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #6C63FF 0%, #764BA2 30%, #f5f5f5 30%);
+      padding: 50px 20px 20px;
+    }
+
+    .app-header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    .app-logo {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .app-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .app-card {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .expense-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .expense-item:last-child {
+      border-bottom: none;
+    }
+
+    .expense-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .expense-info {
+      flex: 1;
+    }
+
+    .expense-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .expense-date {
+      font-size: 0.75rem;
+      color: #999;
+    }
+
+    .expense-amount {
+      font-weight: 700;
+      color: #FF6584;
+    }
+
+    .floating-card {
+      position: absolute;
+      background: white;
+      border-radius: 16px;
+      padding: 15px 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      animation: floatCard 3s ease-in-out infinite;
+    }
+
+    .floating-card-1 {
+      top: 10%;
+      right: -20px;
+      animation-delay: 0s;
+    }
+
+    .floating-card-2 {
+      bottom: 20%;
+      left: -30px;
+      animation-delay: 1.5s;
+    }
+
+    @keyframes floatCard {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .floating-card .amount {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .floating-card .label {
+      font-size: 0.75rem;
+      color: #999;
+    }
+
+    /* Features Section */
+    .features {
+      padding: 100px 40px;
+      position: relative;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-tag {
+      display: inline-block;
+      padding: 8px 20px;
+      background: rgba(108, 99, 255, 0.15);
+      border-radius: 25px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--primary);
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border-radius: 24px;
+      padding: 40px;
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--gradient-1);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      border-color: rgba(108, 99, 255, 0.2);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+
+    .feature-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .feature-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+      background: rgba(108, 99, 255, 0.15);
+    }
+
+    .feature-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .feature-desc {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* How It Works */
+    .how-it-works {
+      padding: 100px 40px;
+      background: linear-gradient(180deg, var(--bg-dark) 0%, #1a1932 50%, var(--bg-dark) 100%);
+    }
+
+    .steps-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 60px;
+    }
+
+    .step {
+      display: flex;
+      gap: 40px;
+      align-items: center;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s ease;
+    }
+
+    .step.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .step:nth-child(even) {
+      flex-direction: row-reverse;
+    }
+
+    .step-number {
+      width: 80px;
+      height: 80px;
+      min-width: 80px;
+      background: var(--gradient-1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      box-shadow: 0 20px 40px rgba(108, 99, 255, 0.3);
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .step-desc {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Screenshots */
+    .screenshots {
+      padding: 100px 40px;
+    }
+
+    .screenshots-scroll {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      gap: 30px;
+      overflow-x: auto;
+      padding: 40px 0;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .screenshots-scroll::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .screenshots-scroll::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.05);
+      border-radius: 4px;
+    }
+
+    .screenshots-scroll::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 4px;
+    }
+
+    .screenshot-card {
+      flex: 0 0 280px;
+      scroll-snap-align: start;
+      background: var(--bg-card);
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: all 0.3s ease;
+    }
+
+    .screenshot-card:hover {
+      transform: scale(1.05);
+      border-color: rgba(108, 99, 255, 0.3);
+    }
+
+    .screenshot-img {
+      width: 100%;
+      height: 400px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+    }
+
+    .screenshot-info {
+      padding: 20px;
+    }
+
+    .screenshot-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .screenshot-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Testimonials */
+    .testimonials {
+      padding: 100px 40px;
+      background: linear-gradient(180deg, var(--bg-dark) 0%, #1a1932 50%, var(--bg-dark) 100%);
+    }
+
+    .testimonials-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .testimonial-card {
+      background: var(--bg-card);
+      border-radius: 24px;
+      padding: 40px;
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: all 0.3s ease;
+    }
+
+    .testimonial-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(108, 99, 255, 0.2);
+    }
+
+    .testimonial-stars {
+      color: #FFD700;
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+
+    .testimonial-text {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .author-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--gradient-1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .author-name {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .author-role {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Download CTA */
+    .download-cta {
+      padding: 100px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .download-cta::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(108, 99, 255, 0.2) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .download-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .download-title {
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 700;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .download-subtitle {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      margin-bottom: 40px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .download-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .download-btn {
+      padding: 18px 40px;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .download-btn-primary {
+      background: var(--gradient-1);
+      border: none;
+      color: white;
+    }
+
+    .download-btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(108, 99, 255, 0.4);
+    }
+
+    .download-btn-secondary {
+      background: transparent;
+      border: 2px solid rgba(255,255,255,0.2);
+      color: white;
+    }
+
+    .download-btn-secondary:hover {
+      border-color: var(--primary);
+      background: rgba(108, 99, 255, 0.1);
+      transform: translateY(-3px);
+    }
+
+    .download-qr {
+      margin-top: 50px;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .qr-code {
+      width: 150px;
+      height: 150px;
+      background: white;
+      border-radius: 20px;
+      padding: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .qr-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+    }
+
+    .qr-text {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    /* Footer */
+    .footer {
+      padding: 60px 40px 30px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .footer-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .footer-desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .footer-links h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+    }
+
+    .footer-links ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.3s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 30px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .footer-copyright {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Mobile Menu */
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav {
+        padding: 15px 20px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      .hero {
+        padding: 120px 20px 60px;
+      }
+
+      .hero-content {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        text-align: center;
+      }
+
+      .hero-subtitle {
+        margin: 0 auto 30px;
+      }
+
+      .hero-buttons {
+        justify-content: center;
+      }
+
+      .hero-stats {
+        justify-content: center;
+      }
+
+      .hero-visual {
+        order: -1;
+      }
+
+      .phone-mockup {
+        width: 250px;
+        height: 500px;
+      }
+
+      .floating-card {
+        display: none;
+      }
+
+      .features,
+      .how-it-works,
+      .screenshots,
+      .testimonials,
+      .download-cta {
+        padding: 60px 20px;
+      }
+
+      .step {
+        flex-direction: column !important;
+        text-align: center;
+      }
+
+      .step-number {
+        width: 60px;
+        height: 60px;
+        min-width: 60px;
+        font-size: 1.5rem;
+      }
+
+      .download-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .download-btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+      }
+    }
+
+    /* Animations */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    .scroll-mouse {
+      width: 24px;
+      height: 38px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 12px;
+      position: relative;
+    }
+
+    .scroll-mouse::before {
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 8px;
+      background: white;
+      border-radius: 2px;
+      animation: scrollWheel 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollWheel {
+      0% { transform: translateX(-50%) translateY(0); opacity: 1; }
+      100% { transform: translateX(-50%) translateY(10px); opacity: 0; }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-10px); }
+    }
+
+    /* Back to top button */
+    .back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      background: var(--gradient-1);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 1000;
+      box-shadow: 0 10px 30px rgba(108, 99, 255, 0.3);
+    }
+
+    .back-to-top.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .back-to-top:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(108, 99, 255, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav" id="navbar">
+    <div class="nav-content">
+      <a href="#" class="logo">
+        <div class="logo-icon">💰</div>
+        小账本
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features">功能特点</a></li>
+        <li><a href="#how-it-works">使用方法</a></li>
+        <li><a href="#screenshots">应用截图</a></li>
+        <li><a href="#testimonials">用户评价</a></li>
+      </ul>
+      <button class="nav-cta" onclick="scrollToDownload()">立即下载</button>
+      <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="hero-badge">智能记账新体验</div>
+        <h1 class="hero-title">让每一笔账目<br>清晰可见</h1>
+        <p class="hero-subtitle">
+          小账本是一款简洁高效的个人记账应用，帮助你轻松管理收支、设置预算、分析消费习惯，让理财变得简单有趣。
+        </p>
+        <div class="hero-buttons">
+          <a href="https://xiaozhangben-web.vercel.app" class="btn-primary">
+            <span>📱</span> 立即使用
+          </a>
+          <a href="#features" class="btn-secondary">了解更多</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-number">10K+</div>
+            <div class="stat-label">活跃用户</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">4.9</div>
+            <div class="stat-label">用户评分</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">50+</div>
+            <div class="stat-label">功能特性</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="phone-mockup">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="app-header">
+              <div class="app-logo">💰</div>
+              <div class="app-title">小账本</div>
+            </div>
+            <div class="app-card">
+              <div class="expense-item">
+                <div class="expense-icon" style="background: #FF6B6B20; color: #FF6B6B;">🍔</div>
+                <div class="expense-info">
+                  <div class="expense-name">午餐</div>
+                  <div class="expense-date">今天 12:30</div>
+                </div>
+                <div class="expense-amount">-¥35.00</div>
+              </div>
+              <div class="expense-item">
+                <div class="expense-icon" style="background: #4ECDC420; color: #4ECDC4;">🚌</div>
+                <div class="expense-info">
+                  <div class="expense-name">地铁</div>
+                  <div class="expense-date">今天 08:15</div>
+                </div>
+                <div class="expense-amount">-¥4.00</div>
+              </div>
+              <div class="expense-item">
+                <div class="expense-icon" style="background: #45B7D120; color: #45B7D1;">☕</div>
+                <div class="expense-info">
+                  <div class="expense-name">咖啡</div>
+                  <div class="expense-date">昨天 15:20</div>
+                </div>
+                <div class="expense-amount">-¥28.00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="floating-card floating-card-1">
+          <div class="label">本月支出</div>
+          <div class="amount">¥2,580</div>
+        </div>
+        <div class="floating-card floating-card-2">
+          <div class="label">预算剩余</div>
+          <div class="amount" style="color: #4ECDC4;">¥1,420</div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <div class="scroll-mouse"></div>
+      <span>向下滚动</span>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="section-header fade-in">
+      <div class="section-tag">核心功能</div>
+      <h2 class="section-title">为什么选择小账本？</h2>
+      <p class="section-subtitle">简洁高效的设计理念，让记账变得轻松愉快</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card fade-in">
+        <div class="feature-icon">📊</div>
+        <h3 class="feature-title">智能统计</h3>
+        <p class="feature-desc">多维度数据分析，可视化图表展示，让你的消费一目了然</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">🎯</div>
+        <h3 class="feature-title">预算管理</h3>
+        <p class="feature-desc">设置月度预算，实时监控支出，超支自动提醒，帮你养成良好消费习惯</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">🏷️</div>
+        <h3 class="feature-title">分类标签</h3>
+        <p class="feature-desc">自定义分类和标签，灵活管理各类收支，账目清晰有条理</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">📸</div>
+        <h3 class="feature-title">拍照记账</h3>
+        <p class="feature-desc">支持OCR识别小票，智能提取金额和分类，记账效率提升10倍</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">☁️</div>
+        <h3 class="feature-title">云端同步</h3>
+        <p class="feature-desc">数据实时同步到云端，多设备无缝切换，再也不怕数据丢失</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">🔒</div>
+        <h3 class="feature-title">隐私保护</h3>
+        <p class="feature-desc">端到端加密传输，数据安全有保障，你的隐私我们守护</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="section-header fade-in">
+      <div class="section-tag">使用指南</div>
+      <h2 class="section-title">三步开始记账</h2>
+      <p class="section-subtitle">简单几步，开启你的理财之旅</p>
+    </div>
+    <div class="steps-container">
+      <div class="step fade-in">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h3 class="step-title">注册账号</h3>
+          <p class="step-desc">使用昵称和密码快速注册，无需手机号验证，保护你的隐私安全。注册后即可开始记录你的每一笔账目。</p>
+        </div>
+      </div>
+      <div class="step fade-in">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h3 class="step-title">记录收支</h3>
+          <p class="step-desc">点击"+"按钮，输入金额、选择分类、添加备注，3秒完成一笔记录。支持收入和支出，让你的账目完整清晰。</p>
+        </div>
+      </div>
+      <div class="step fade-in">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h3 class="step-title">分析报表</h3>
+          <p class="step-desc">查看详细的统计报表，了解消费趋势，发现省钱机会。设置预算目标，让理财更有计划性。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Screenshots -->
+  <section class="screenshots" id="screenshots">
+    <div class="section-header fade-in">
+      <div class="section-tag">应用展示</div>
+      <h2 class="section-title">精美的界面设计</h2>
+      <p class="section-subtitle">直观简洁的操作体验，让记账成为一种享受</p>
+    </div>
+    <div class="screenshots-scroll">
+      <div class="screenshot-card">
+        <div class="screenshot-img">📱</div>
+        <div class="screenshot-info">
+          <h3 class="screenshot-title">首页总览</h3>
+          <p class="screenshot-desc">一目了然的收支统计，快速了解财务状况</p>
+        </div>
+      </div>
+      <div class="screenshot-card">
+        <div class="screenshot-img">📊</div>
+        <div class="screenshot-info">
+          <h3 class="screenshot-title">数据报表</h3>
+          <p class="screenshot-desc">多维度图表分析，消费趋势尽在掌握</p>
+        </div>
+      </div>
+      <div class="screenshot-card">
+        <div class="screenshot-img">➕</div>
+        <div class="screenshot-info">
+          <h3 class="screenshot-title">快速记账</h3>
+          <p class="screenshot-desc">简洁的记账界面，3秒完成一笔记录</p>
+        </div>
+      </div>
+      <div class="screenshot-card">
+        <div class="screenshot-img">🎯</div>
+        <div class="screenshot-info">
+          <h3 class="screenshot-title">预算设置</h3>
+          <p class="screenshot-desc">灵活的预算管理，超支自动提醒</p>
+        </div>
+      </div>
+      <div class="screenshot-card">
+        <div class="screenshot-img">👤</div>
+        <div class="screenshot-info">
+          <h3 class="screenshot-title">个人中心</h3>
+          <p class="screenshot-desc">个性化设置，打造专属记账体验</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials" id="testimonials">
+    <div class="section-header fade-in">
+      <div class="section-tag">用户评价</div>
+      <h2 class="section-title">听听用户怎么说</h2>
+      <p class="section-subtitle">真实用户的使用反馈</p>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card fade-in">
+        <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+        <p class="testimonial-text">"用了小账本之后，我终于知道自己的钱花在哪里了！界面简洁好看，记账特别方便。"</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">👩</div>
+          <div>
+            <div class="author-name">小美</div>
+            <div class="author-role">大学生</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card fade-in">
+        <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+        <p class="testimonial-text">"预算功能太实用了！每月设置好预算，超支会提醒，帮我存下了不少钱。"</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">👨</div>
+          <div>
+            <div class="author-name">阿杰</div>
+            <div class="author-role">上班族</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card fade-in">
+        <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+        <p class="testimonial-text">"拍照记账功能太棒了，小票一拍就能识别，再也不用手动输入了！"</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">👩‍💼</div>
+          <div>
+            <div class="author-name">李姐</div>
+            <div class="author-role">自由职业</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Download CTA -->
+  <section class="download-cta" id="download">
+    <div class="download-content fade-in">
+      <h2 class="download-title">开始你的理财之旅</h2>
+      <p class="download-subtitle">免费使用，无需付费。现在就加入，和万千用户一起养成记账好习惯！</p>
+      <div class="download-buttons">
+        <a href="https://xiaozhangben-web.vercel.app" class="download-btn download-btn-primary">
+          <span>📱</span> 打开应用
+        </a>
+        <a href="https://xiaozhangben-web.vercel.app" class="download-btn download-btn-secondary">
+          <span>💻</span> 网页版
+        </a>
+      </div>
+      <div class="download-qr">
+        <div class="qr-code">
+          <div class="qr-placeholder">📷</div>
+        </div>
+        <span class="qr-text">扫码访问</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <span>💰</span> 小账本
+        </div>
+        <p class="footer-desc">简洁高效的个人记账应用，让理财变得简单有趣。</p>
+      </div>
+      <div class="footer-links">
+        <h4>产品</h4>
+        <ul>
+          <li><a href="#features">功能特点</a></li>
+          <li><a href="#screenshots">应用截图</a></li>
+          <li><a href="#download">下载应用</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>支持</h4>
+        <ul>
+          <li><a href="#">帮助中心</a></li>
+          <li><a href="#">使用教程</a></li>
+          <li><a href="#">反馈建议</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>关于</h4>
+        <ul>
+          <li><a href="#">关于我们</a></li>
+          <li><a href="#">隐私政策</a></li>
+          <li><a href="#">用户协议</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copyright">© 2024 小账本. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Back to top button -->
+  <button class="back-to-top" id="backToTop" onclick="scrollToTop()">↑</button>
+
+  <script>
+    // Navbar scroll effect
+    const navbar = document.getElementById('navbar');
+    const backToTop = document.getElementById('backToTop');
+
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+
+      if (window.scrollY > 500) {
+        backToTop.classList.add('visible');
+      } else {
+        backToTop.classList.remove('visible');
+      }
+    });
+
+    // Smooth scroll to sections
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Scroll to download section
+    function scrollToDownload() {
+      document.getElementById('download').scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+
+    // Scroll to top
+    function scrollToTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+    // Intersection Observer for animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    // Observe all fade-in elements
+    document.querySelectorAll('.fade-in, .step').forEach(el => {
+      observer.observe(el);
+    });
+
+    // Mobile menu (simple toggle)
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const navLinks = document.querySelector('.nav-links');
+
+    mobileMenuBtn.addEventListener('click', () => {
+      navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+      navLinks.style.position = 'absolute';
+      navLinks.style.top = '100%';
+      navLinks.style.left = '0';
+      navLinks.style.right = '0';
+      navLinks.style.flexDirection = 'column';
+      navLinks.style.background = 'rgba(15, 14, 23, 0.95)';
+      navLinks.style.padding = '20px';
+      navLinks.style.gap = '15px';
+    });
+  </script>
+</body>
+</html>
