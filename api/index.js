@@ -457,8 +457,8 @@ process.on('unhandledRejection', (reason) => {
   console.error('未处理的 Promise 拒绝:', reason)
 })
 
-const server = app.listen(3001, () => {
-  console.log(`小账本后端运行在 http://localhost:3001`)
+const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`小账本后端运行在 http://0.0.0.0:${PORT}`)
 })
 
 server.on('error', (err) => {
