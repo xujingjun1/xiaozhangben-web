@@ -1,11 +1,11 @@
 services:
   - type: web
-    name: xiaozhangben-api
+    name: xiaozhangben
     runtime: node
     plan: free
-    buildCommand: npm install
+    buildCommand: npm install && npm run build
     startCommand: node server.js
     healthCheckPath: /api/health
     envVars:
-      - key: NODE_ENV
-        value: production
+      - key: PORT
+        value: 8080
