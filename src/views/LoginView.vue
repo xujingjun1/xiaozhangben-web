@@ -14,7 +14,6 @@ const regUsername = ref('')
 const regPassword = ref('')
 const regConfirm = ref('')
 const resetUsername = ref('')
-const resetOldPassword = ref('')
 const resetNewPassword = ref('')
 const resetConfirm = ref('')
 const resetSuccess = ref(false)
@@ -94,12 +93,12 @@ async function handleRegister() {
 }
 
 async function handleResetPassword() {
-  if (!resetUsername.value || !resetOldPassword.value || !resetNewPassword.value || !resetConfirm.value) return
+  if (!resetUsername.value || !resetNewPassword.value || !resetConfirm.value) return
   if (resetNewPassword.value !== resetConfirm.value) { errorMsg.value = '两次输入的密码不一致'; return }
   if (resetNewPassword.value.length < 6) { errorMsg.value = '密码至少6位'; return }
   loading.value = true; errorMsg.value = ''
   try {
-    await api.resetPassword(resetUsername.value, resetOldPassword.value, resetNewPassword.value)
+    await api.resetPassword(resetUsername.value, resetNewPassword.value)
     resetSuccess.value = true; errorMsg.value = ''
   } catch (e: any) {
     errorMsg.value = e.message === 'Failed to fetch' ? '网络连接失败，请检查网络' : e.message
@@ -224,17 +223,15 @@ function switchMode(m: 'login' | 'register' | 'reset') {
         <template v-else>
           <input v-model="resetUsername" placeholder="请输入昵称"
             class="w-full bg-surface rounded-2xl px-4 py-3.5 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/30 transition mb-4" />
-          <input v-model="resetOldPassword" type="password" placeholder="请输入旧密码"
-            class="w-full bg-surface rounded-2xl px-4 py-3.5 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/30 transition mb-4" />
           <input v-model="resetNewPassword" type="password" placeholder="请输入新密码（至少6位）"
             class="w-full bg-surface rounded-2xl px-4 py-3.5 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/30 transition mb-4" />
           <input v-model="resetConfirm" type="password" placeholder="请再次确认新密码"
             class="w-full bg-surface rounded-2xl px-4 py-3.5 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/30 transition mb-4"
             @keyup.enter="handleResetPassword" />
           <p v-if="errorMsg" class="text-error text-xs text-center mb-3">{{ errorMsg }}</p>
-          <button @click="handleResetPassword" :disabled="!resetUsername || !resetOldPassword || !resetNewPassword || !resetConfirm || loading"
+          <button @click="handleResetPassword" :disabled="!resetUsername || !resetNewPassword || !resetConfirm || loading"
             class="w-full py-4 rounded-2xl font-semibold text-white transition-all active:scale-95"
-            :class="(resetUsername && resetOldPassword && resetNewPassword && resetConfirm) ? 'bg-gradient-to-r from-primary to-primary-light shadow-lg shadow-primary/30' : 'bg-gray-300 cursor-not-allowed'">
+            :class="(resetUsername && resetNewPassword && resetConfirm) ? 'bg-gradient-to-r from-primary to-primary-light shadow-lg shadow-primary/30' : 'bg-gray-300 cursor-not-allowed'">
             {{ loading ? '重置中...' : '重置密码' }}
           </button>
         </template>

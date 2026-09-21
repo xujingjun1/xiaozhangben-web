@@ -46,8 +46,8 @@ export const api = {
     request('/auth/register', { method: 'POST', body: JSON.stringify({ username, password }) }),
   login: (username: string, password: string) =>
     request('/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) }),
-  resetPassword: (username: string, oldPassword: string, newPassword: string) =>
-    request('/auth/reset-password', { method: 'POST', body: JSON.stringify({ username, oldPassword, newPassword }) }),
+  resetPassword: (username: string, newPassword: string) =>
+    request('/auth/reset-password', { method: 'POST', body: JSON.stringify({ username, newPassword }) }),
 
   // Expenses
   getExpenses: () => request('/expenses'),

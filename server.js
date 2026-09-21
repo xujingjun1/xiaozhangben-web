@@ -84,13 +84,12 @@ app.post('/api/auth/login', (req, res) => {
 })
 
 app.post('/api/auth/reset-password', (req, res) => {
-  const { username, oldPassword, newPassword } = req.body
-  if (!username || !oldPassword || !newPassword) return res.status(400).json({ error: '请填写完整信息' })
+  const { username, newPassword } = req.body
+  if (!username || !newPassword) return res.status(400).json({ error: '请填写完整信息' })
   if (newPassword.length < 6) return res.status(400).json({ error: '密码至少6位' })
   const db = loadDB()
   const user = db.users.find(u => u.username === username)
   if (!user) return res.status(400).json({ error: '账号不存在' })
-  if (hashPassword(oldPassword) !== user.password) return res.status(400).json({ error: '旧密码错误' })
   user.password = hashPassword(newPassword)
   saveDB(db)
   res.json({ success: true, message: '密码重置成功' })
