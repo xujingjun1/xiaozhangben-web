@@ -1,5 +1,13 @@
-const isProd = import.meta.env.PROD
-const BASE_URL = import.meta.env.VITE_API_URL || (isProd ? '/api' : 'http://localhost:3001/api')
+const DEFAULT_API = 'http://localhost:3001/api'
+
+function getBaseUrl(): string {
+  const saved = localStorage.getItem('api_url')
+  if (saved) return saved
+  const envUrl = import.meta.env.VITE_API_URL
+  if (envUrl) return envUrl
+  if (import.meta.env.PROD) return '/api'
+  return DEFAULT_API
+}
 
 function getUserId(): string | null {
   return localStorage.getItem('user_id')
@@ -13,10 +21,23 @@ async function request(path: string, options: RequestInit = {}) {
   }
   if (userId) headers['X-User-Id'] = userId
 
-  const res = await fetch(`${BASE_URL}${path}`, { ...options, headers })
+  const res = await fetch(`${getBaseUrl()}${path}`, { ...options, headers })
   const data = await res.json()
   if (!res.ok) throw new Error(data.error || '请求失败')
   return data
+}
+
+// Expose for settings page
+export function getApiUrl(): string {
+  return getBaseUrl()
+}
+
+export function setApiUrl(url: string) {
+  localStorage.setItem('api_url', url)
+}
+
+export function resetApiUrl() {
+  localStorage.removeItem('api_url')
 }
 
 export const api = {

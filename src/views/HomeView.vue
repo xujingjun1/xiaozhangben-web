@@ -2,16 +2,17 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useExpenseStore } from '@/stores/expense'
+import { useDesktop } from '@/composables/useDesktop'
 import { getWeekdayName, getGreeting, formatMoney, formatMoneyCompact } from '@/utils/helpers'
 import DailySummary from '@/components/DailySummary.vue'
 import ExpenseCard from '@/components/ExpenseCard.vue'
 
 const store = useExpenseStore()
 const router = useRouter()
+const { isDesktop } = useDesktop()
 
 onMounted(() => store.init())
 
-// 激励名言
 const quotes = [
   { text: '省钱不是不花钱，而是把钱花在值得的地方。', source: '生活智慧' },
   { text: '理财就是理生活。', source: '经典名言' },
@@ -30,18 +31,15 @@ const quotes = [
   { text: '省下来的就是赚到的。', source: '理财箴言' },
 ]
 
-// 根据日期选择名言（同一天显示同一条）
 const todayQuote = quotes[new Date().getDate() % quotes.length]
-
 </script>
 
 <template>
-  <div class="px-5 pt-4">
+  <div :class="isDesktop ? 'desktop-view' : 'px-5 pt-4'">
     <!-- Header -->
     <div class="mb-4">
       <p class="text-sm text-txt-secondary">{{ getGreeting() }}</p>
       <h1 class="text-2xl font-bold text-txt mt-1">{{ store.selectedMonth }}月{{ new Date().getDate() }}日 {{ getWeekdayName(new Date()) }}</h1>
-      <!-- 每日名言 -->
       <div class="mt-2 px-3 py-2 bg-gradient-to-r from-primary/5 to-primary/10 rounded-xl border border-primary/10">
         <p class="text-xs text-txt-secondary leading-relaxed">
           <span class="material-icons-round text-sm text-primary/60 align-middle mr-1">format_quote</span>
@@ -51,36 +49,42 @@ const todayQuote = quotes[new Date().getDate() % quotes.length]
       </div>
     </div>
 
-    <!-- Daily Summary -->
-    <DailySummary
-      :today-total="store.todayTotal"
-      :month-total="store.monthTotal"
-      :month-income="store.monthIncome"
-      :category-totals="store.categoryTotals"
-    />
+    <!-- Desktop: two column layout -->
+    <div :class="isDesktop ? 'desktop-grid' : ''">
+      <!-- Left column -->
+      <div>
+        <!-- Daily Summary -->
+        <DailySummary
+          :today-total="store.todayTotal"
+          :month-total="store.monthTotal"
+          :month-income="store.monthIncome"
+          :category-totals="store.categoryTotals"
+        />
+      </div>
 
-    <!-- Today's Expenses -->
-    <div class="flex justify-between items-center mt-5 mb-3">
-      <h2 class="text-base font-semibold text-txt">今日消费</h2>
-      <span class="text-base font-bold text-expense">{{ formatMoney(store.todayTotal) }}</span>
-    </div>
+      <!-- Right column: Today's Expenses -->
+      <div>
+        <div class="flex justify-between items-center mt-5 mb-3" :class="isDesktop ? 'mt-0' : ''">
+          <h2 class="text-base font-semibold text-txt">今日消费</h2>
+          <span class="text-base font-bold text-expense">{{ formatMoney(store.todayTotal) }}</span>
+        </div>
 
-    <!-- Expense List -->
-    <div v-if="store.todayExpenses.length" class="space-y-3 pb-4">
-      <ExpenseCard
-        v-for="expense in store.todayExpenses"
-        :key="expense.id"
-        :expense="expense"
-        @delete="store.deleteExpense(expense.id!)"
-        @click="router.push(`/add/${expense.id}`)"
-      />
-    </div>
+        <div v-if="store.todayExpenses.length" class="space-y-3 pb-4">
+          <ExpenseCard
+            v-for="expense in store.todayExpenses"
+            :key="expense.id"
+            :expense="expense"
+            @delete="store.deleteExpense(expense.id!)"
+            @click="router.push('/add')"
+          />
+        </div>
 
-    <!-- Empty State -->
-    <div v-else class="flex flex-col items-center justify-center py-16">
-      <span class="material-icons-round text-7xl text-txt-hint/30">receipt_long</span>
-      <p class="text-txt-hint mt-4">今天还没有记账哦</p>
-      <p class="text-txt-hint/70 text-sm mt-1">点击下方 + 开始记录生活</p>
+        <div v-else class="flex flex-col items-center justify-center py-16">
+          <span class="material-icons-round text-7xl text-txt-hint/30">receipt_long</span>
+          <p class="text-txt-hint mt-4">今天还没有记账哦</p>
+          <p class="text-txt-hint/70 text-sm mt-1">点击 + 开始记录生活</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>

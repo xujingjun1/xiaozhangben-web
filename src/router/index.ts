@@ -1,7 +1,7 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes: [
     { path: '/login', name: 'login', component: () => import('@/views/LoginView.vue') },
     { path: '/', name: 'home', component: () => import('@/views/HomeView.vue') },
@@ -14,56 +14,25 @@ const router = createRouter({
     { path: '/rating', name: 'rating', component: () => import('@/views/RatingView.vue') },
     { path: '/privacy', name: 'privacy', component: () => import('@/views/PrivacyView.vue') },
     { path: '/help', name: 'help', component: () => import('@/views/HelpView.vue') },
+    { path: '/download', name: 'download', component: () => import('@/views/DownloadView.vue') },
   ],
 })
 
-// 验证登录状态是否有效
-let sessionValidated = false
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
-
-async function validateSession(): Promise<boolean> {
+// Simple auth check - do not block navigation
+router.beforeEach((to) => {
   const userId = localStorage.getItem('user_id')
-  if (!userId) return false
-  
-  try {
-    const res = await fetch(`${API_URL}/expenses`, {
-      headers: { 'X-User-Id': userId }
-    })
-    if (res.ok) {
-      sessionValidated = true
-      return true
-    }
-    // 无效则清除
-    localStorage.removeItem('user_id')
-    localStorage.removeItem('user_info')
-    localStorage.removeItem('user_avatar')
-    return false
-  } catch {
-    // 网络错误时保留登录状态
-    sessionValidated = true
-    return true
-  }
-}
 
-router.beforeEach(async (to) => {
-  const userId = localStorage.getItem('user_id')
-  
+  // Not logged in -> redirect to login
   if (!userId && to.name !== 'login') {
     return { name: 'login' }
   }
-  
+
+  // Already logged in -> redirect away from login
   if (userId && to.name === 'login') {
     return { name: 'home' }
   }
-  
-  // 首次访问时验证 session 是否有效
-  if (userId && !sessionValidated) {
-    const valid = await validateSession()
-    if (!valid && to.name !== 'login') {
-      return { name: 'login' }
-    }
-  }
+
+  // Allow navigation (no async session validation to avoid blocking)
 })
 
 export default router

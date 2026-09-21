@@ -17,126 +17,32 @@ body {
   transition: background-color 0.3s, color 0.3s;
 }
 
-/* ===== 深色模式（参考QQ深色风格） ===== */
-html.dark body {
-  background: #111827;
-  color: #f0f0f0;
-}
-
-/* 卡片/白色背景 → 深蓝灰 */
-html.dark .bg-white {
-  background-color: #1f2937 !important;
-}
-
-/* 输入框/浅色背景 → 稍深 */
-html.dark .bg-surface {
-  background-color: #374151 !important;
-}
-
-/* 主文字 → 纯白 */
-html.dark .text-txt {
-  color: #f9fafb !important;
-}
-
-/* 次要文字 → 深色凸出 */
-html.dark .text-txt-secondary {
-  color: #1f2937 !important;
-}
-
-/* 提示文字 → 中灰 */
-html.dark .text-txt-hint {
-  color: #6b7280 !important;
-}
-
-/* 灰色背景 */
-html.dark .bg-gray-200 {
-  background-color: #4b5563 !important;
-}
-
-html.dark .bg-gray-100 {
-  background-color: #374151 !important;
-}
-
-/* 页面标题 → 深色凸出 */
-html.dark h1,
-html.dark h2,
-html.dark .text-2xl,
-html.dark .text-xl {
-  color: #1f2937 !important;
-}
-
-/* 区域小标题（个人资料、数据管理等）→ 紫色凸出 */
-html.dark .font-semibold {
-  color: #818cf8 !important;
-}
-
-/* 分类卡片 → 深色但有层次 */
-html.dark .rounded-2xl {
-  background-color: #1f2937 !important;
-}
-
-/* 小图标背景 → 半透明提亮 */
-html.dark .rounded-xl {
-  background-color: rgba(99, 102, 241, 0.15) !important;
-}
-
-/* 图标文字 → 白色 */
-html.dark .text-txt-secondary {
-  color: #d1d5db !important;
-}
-
-/* 支出金额 → 红色 */
-html.dark .text-expense {
-  color: #f87171 !important;
-}
-
-/* 收入金额 → 绿色 */
-html.dark .text-income {
-  color: #34d399 !important;
-}
-
-/* 标签背景 */
-html.dark .bg-primary\/10 {
-  background-color: rgba(99, 102, 241, 0.2) !important;
-}
-
-/* 分割线 */
-html.dark .divide-surface > * + * {
-  border-color: #374151 !important;
-}
-
-html.dark .bg-surface\/50 {
-  background-color: rgba(55, 65, 81, 0.5) !important;
-}
-
-/* 每日名言 */
-html.dark .from-primary\/5 {
-  background-color: rgba(99, 102, 241, 0.1) !important;
-}
-
-html.dark .border-primary\/10 {
-  border-color: rgba(99, 102, 241, 0.2) !important;
-}
-
-/* 按钮文字 → 保持白色 */
-html.dark .text-white {
-  color: #ffffff !important;
-}
-
-/* 渐变按钮背景 → 保持紫色 */
-html.dark .from-primary {
-  --tw-gradient-from: #6C63FF !important;
-}
-
-html.dark .to-primary-light {
-  --tw-gradient-to: #9D97FF !important;
-}
+/* ===== Dark Mode ===== */
+html.dark body { background: #111827; color: #f0f0f0; }
+html.dark .bg-white { background-color: #1f2937 !important; }
+html.dark .bg-surface { background-color: #374151 !important; }
+html.dark .text-txt { color: #f9fafb !important; }
+html.dark .text-txt-secondary { color: #d1d5db !important; }
+html.dark .text-txt-hint { color: #6b7280 !important; }
+html.dark .bg-gray-200 { background-color: #4b5563 !important; }
+html.dark .bg-gray-100 { background-color: #374151 !important; }
+html.dark h1, html.dark h2, html.dark .text-2xl, html.dark .text-xl { color: #f9fafb !important; }
+html.dark .font-semibold { color: #818cf8 !important; }
+html.dark .rounded-2xl { background-color: #1f2937 !important; }
+html.dark .rounded-xl { background-color: rgba(99, 102, 241, 0.15) !important; }
+html.dark .text-expense { color: #f87171 !important; }
+html.dark .text-income { color: #34d399 !important; }
+html.dark .bg-primary\/10 { background-color: rgba(99, 102, 241, 0.2) !important; }
+html.dark .divide-surface > * + * { border-color: #374151 !important; }
+html.dark .bg-surface\/50 { background-color: rgba(55, 65, 81, 0.5) !important; }
+html.dark .from-primary\/5 { background-color: rgba(99, 102, 241, 0.1) !important; }
+html.dark .border-primary\/10 { border-color: rgba(99, 102, 241, 0.2) !important; }
+html.dark .text-white { color: #ffffff !important; }
+html.dark .from-primary { --tw-gradient-from: #6C63FF !important; }
+html.dark .to-primary-light { --tw-gradient-to: #9D97FF !important; }
 
 ::-webkit-scrollbar { width: 0; height: 0; }
-
-input, textarea {
-  font-family: 'Noto Sans SC', sans-serif;
-}
+input, textarea { font-family: 'Noto Sans SC', sans-serif; }
 
 .material-icons-round {
   font-family: 'Material Icons Round';
@@ -153,27 +59,59 @@ input, textarea {
   -webkit-font-smoothing: antialiased;
 }
 
-/* 隐藏滚动条但保留滑动功能 */
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
 
-/* 弹窗动画 */
 @keyframes slide-up {
   from { transform: translateY(30px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 .animate-slide-up { animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
 
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.2s ease;
+.modal-enter-active, .modal-leave-active { transition: opacity 0.2s ease; }
+.modal-enter-from, .modal-leave-to { opacity: 0; }
+
+/* ===== Desktop Layout ===== */
+.app-shell { min-height: 100vh; }
+.app-shell--desktop { display: flex; min-height: 100vh; }
+.app-shell--mobile { max-width: 480px; margin: 0 auto; position: relative; padding-bottom: 80px; }
+
+.app-main--desktop { flex: 1; margin-left: 220px; min-height: 100vh; overflow-y: auto; padding: 0; }
+.app-main--mobile { max-width: 480px; margin: 0 auto; }
+
+.app-main--desktop::-webkit-scrollbar { width: 6px; }
+.app-main--desktop::-webkit-scrollbar-track { background: transparent; }
+.app-main--desktop::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+.app-main--desktop::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+@media (min-width: 900px) {
+  .px-5 { padding-left: 32px !important; padding-right: 32px !important; }
 }
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
+
+/* Desktop view containers */
+.desktop-view { max-width: 1100px; margin: 0 auto; padding: 32px 40px; }
+
+/* Desktop grid layouts */
+.desktop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+
+/* Desktop table styles */
+.desktop-table { width: 100%; border-collapse: collapse; }
+.desktop-table th { text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 600; color: #8B87B0; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #f0edff; }
+.desktop-table td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid #f8f6ff; }
+.desktop-table tr:hover td { background: #f8f6ff; }
+
+/* Desktop report chart improvements */
+@media (min-width: 900px) {
+  .desktop-view .bg-gradient-to-br.from-primary { padding: 28px 32px; }
 }
+
+/* Desktop expense card hover */
+@media (min-width: 900px) {
+  .bg-white.rounded-2xl:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
+}
+
+/* Desktop sidebar dark mode support */
+html.dark .desktop-sidebar { background: #1a1a2e; border-right-color: #2d2b55; }
+html.dark .sidebar-logo { border-bottom-color: #2d2b55; }
+html.dark .sidebar-nav-item:hover { background: rgba(108, 99, 255, 0.1); }
+html.dark .sidebar-footer { border-top-color: #2d2b55; }
