@@ -325,14 +325,14 @@
     .phone-screen {
       width: 100%;
       height: 100%;
-      background: linear-gradient(180deg, #6C63FF 0%, #764BA2 30%, #f5f5f5 30%);
-      padding: 50px 20px 20px;
+      background: linear-gradient(180deg, #6C63FF 0%, #764BA2 48%, #f5f5f5 48%);
+      padding: 52px 20px 20px;
     }
 
     .app-header {
       text-align: center;
       color: white;
-      margin-bottom: 30px;
+      margin-bottom: 16px;
     }
 
     .app-logo {
@@ -599,77 +599,96 @@
       line-height: 1.6;
     }
 
-    /* Screenshots */
-    .screenshots {
-      padding: 100px 40px;
-    }
+    /* Feature Showcase */
+.feature-showcase{padding:100px 40px;position:relative}
+.showcase-item{max-width:1200px;margin:0 auto 100px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.showcase-item.reverse .showcase-text{order:2}
+.showcase-item.reverse .showcase-visual{order:1}
+.showcase-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(108,99,255,.12);border-radius:20px;font-size:.8rem;font-weight:600;color:var(--p);margin-bottom:16px}
+.showcase-title{font-size:2rem;font-weight:800;margin-bottom:16px;line-height:1.2}
+.showcase-desc{font-size:1rem;color:var(--ts);line-height:1.8;margin-bottom:24px}
+.showcase-features{list-style:none;display:flex;flex-direction:column;gap:14px}
+.showcase-features li{display:flex;align-items:flex-start;gap:12px;font-size:.95rem;color:#ccc}
+.showcase-features .material-icons-round{font-size:20px;color:var(--p);margin-top:2px}
+.mini-phone{width:280px;height:520px;background:#1a1a2e;border-radius:32px;border:3px solid rgba(255,255,255,.08);overflow:hidden;position:relative;margin:0 auto;box-shadow:0 40px 80px rgba(0,0,0,.4)}
+.mini-phone-notch{width:120px;height:26px;background:var(--bg);border-radius:0 0 16px 16px;position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:5}
+.mini-phone-screen{width:100%;height:100%;overflow:hidden}
+.screen-home{background:linear-gradient(180deg,#6C63FF 0%,#764BA2 45%,#f5f5f5 45%);padding:42px 16px 16px}
+.screen-home .sh-header{text-align:center;color:#fff;margin-bottom:16px}
+.screen-home .sh-header .sh-icon{font-size:2rem;margin-bottom:4px}
+.screen-home .sh-header .sh-title{font-size:.85rem;font-weight:600}
+.screen-home .sh-card{background:#fff;border-radius:16px;padding:14px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+.screen-home .sh-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0f0}
+.screen-home .sh-row:last-child{border:none}
+.screen-home .sh-emoji{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:#f0f0f0}
+.screen-home .sh-info{flex:1}
+.screen-home .sh-name{font-size:.78rem;font-weight:600;color:#333}
+.screen-home .sh-date{font-size:.65rem;color:#999}
+.screen-home .sh-amount{font-size:.8rem;font-weight:700;color:#FF6584}
+.screen-home .sh-income{color:#4ECDC4}
+.screen-home .sh-total{text-align:center;margin-top:12px;padding:10px;background:linear-gradient(135deg,rgba(108,99,255,.08),rgba(255,101,132,.08));border-radius:12px}
+.screen-home .sh-total .sh-label{font-size:.65rem;color:#999}
+.screen-home .sh-total .sh-val{font-size:1.1rem;font-weight:800;color:#333}
+.screen-charts{background:#1a1a2e;padding:42px 16px 16px;height:100%}
+.screen-charts .sc-header{text-align:center;color:#fff;margin-bottom:14px}
+.screen-charts .sc-header h4{font-size:.85rem;font-weight:600}
+.screen-charts .sc-header p{font-size:.65rem;color:var(--ts);margin-top:2px}
+.screen-charts .sc-chart{background:var(--card);border-radius:16px;padding:14px;margin-bottom:12px}
+.screen-charts .sc-chart-title{font-size:.7rem;color:var(--ts);margin-bottom:10px}
+.pie-chart{width:100px;height:100px;border-radius:50%;background:conic-gradient(#6C63FF 0deg 130deg,#FF6584 130deg 200deg,#00D2FF 200deg 260deg,#4ECDC4 260deg 310deg,#FFB199 310deg 360deg);margin:0 auto 12px;position:relative}
+.pie-chart::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:55px;height:55px;background:var(--card);border-radius:50%}
+.pie-legend{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.pie-legend span{font-size:.6rem;display:flex;align-items:center;gap:4px;color:#aaa}
+.pie-legend span::before{content:'';width:8px;height:8px;border-radius:2px;display:inline-block}
+.pie-legend .l1::before{background:#6C63FF}
+.pie-legend .l2::before{background:#FF6584}
+.pie-legend .l3::before{background:#00D2FF}
+.pie-legend .l4::before{background:#4ECDC4}
+.pie-legend .l5::before{background:#FFB199}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:70px;padding-top:10px}
+.bar-chart .bar{flex:1;border-radius:4px 4px 0 0;min-width:16px}
+.bar-chart .bar:nth-child(1){height:45%;background:#6C63FF}
+.bar-chart .bar:nth-child(2){height:70%;background:#FF6584}
+.bar-chart .bar:nth-child(3){height:35%;background:#00D2FF}
+.bar-chart .bar:nth-child(4){height:85%;background:#6C63FF}
+.bar-chart .bar:nth-child(5){height:55%;background:#FF6584}
+.bar-chart .bar:nth-child(6){height:60%;background:#00D2FF}
+.bar-labels{display:flex;gap:6px;margin-top:4px}
+.bar-labels span{flex:1;text-align:center;font-size:.5rem;color:#666}
+.screen-add{background:#f8f7ff;padding:42px 16px 16px;height:100%}
+.screen-add .sa-header{text-align:center;margin-bottom:14px}
+.screen-add .sa-header h4{font-size:.85rem;font-weight:700;color:#333}
+.screen-add .sa-type{display:flex;gap:6px;margin-bottom:12px}
+.screen-add .sa-type span{flex:1;text-align:center;padding:8px 4px;border-radius:10px;font-size:.65rem;font-weight:600;background:#eee;color:#999}
+.screen-add .sa-type span.active{background:var(--p);color:#fff}
+.screen-add .sa-amount{background:#fff;border-radius:16px;padding:16px;text-align:center;margin-bottom:12px;box-shadow:0 4px 12px rgba(0,0,0,.05)}
+.screen-add .sa-amount .sa-label{font-size:.65rem;color:#999}
+.screen-add .sa-amount .sa-val{font-size:1.8rem;font-weight:800;color:#333;margin-top:4px}
+.screen-add .sa-cats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.screen-add .sa-cat{text-align:center;padding:8px 2px;border-radius:10px;background:#fff;font-size:.55rem;color:#666}
+.screen-add .sa-cat.selected{background:rgba(108,99,255,.12);color:var(--p);font-weight:700}
+.screen-add .sa-cat .sa-cat-icon{font-size:1.1rem;margin-bottom:2px}
+.screen-add .sa-submit{width:100%;padding:10px;background:linear-gradient(135deg,#6C63FF,#FF6584);border:none;border-radius:12px;color:#fff;font-weight:700;font-size:.8rem;cursor:pointer}
+.screen-budget{background:#f8f7ff;padding:42px 16px 16px;height:100%}
+.screen-budget .sb-header{margin-bottom:14px}
+.screen-budget .sb-header h4{font-size:.85rem;font-weight:700;color:#333}
+.screen-budget .sb-header p{font-size:.65rem;color:#999;margin-top:2px}
+.screen-budget .sb-total{background:#fff;border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 4px 12px rgba(0,0,0,.05)}
+.screen-budget .sb-total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.screen-budget .sb-total-row .sb-label{font-size:.7rem;color:#999}
+.screen-budget .sb-total-row .sb-val{font-size:.85rem;font-weight:700;color:#333}
+.screen-budget .sb-bar-wrap{height:6px;background:#eee;border-radius:3px;overflow:hidden}
+.screen-budget .sb-bar-fill{height:100%;border-radius:3px}
+.screen-budget .sb-cats{display:flex;flex-direction:column;gap:8px}
+.screen-budget .sb-cat{background:#fff;border-radius:12px;padding:10px 12px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.screen-budget .sb-cat-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.screen-budget .sb-cat-head .sb-cat-name{font-size:.72rem;font-weight:600;color:#333;display:flex;align-items:center;gap:4px}
+.screen-budget .sb-cat-head .sb-cat-val{font-size:.68rem;color:#999}
+.screen-budget .sb-cat-bar{height:5px;background:#eee;border-radius:3px;overflow:hidden}
+.screen-budget .sb-cat-fill{height:100%;border-radius:3px}
+@media(max-width:768px){.showcase-item{grid-template-columns:1fr;gap:40px;text-align:center}.showcase-item.reverse .showcase-text,.showcase-item.reverse .showcase-visual{order:unset}.mini-phone{width:240px;height:440px}.feature-showcase{padding:60px 20px}}
 
-    .screenshots-scroll {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      gap: 30px;
-      overflow-x: auto;
-      padding: 40px 0;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .screenshots-scroll::-webkit-scrollbar {
-      height: 8px;
-    }
-
-    .screenshots-scroll::-webkit-scrollbar-track {
-      background: rgba(255,255,255,0.05);
-      border-radius: 4px;
-    }
-
-    .screenshots-scroll::-webkit-scrollbar-thumb {
-      background: var(--primary);
-      border-radius: 4px;
-    }
-
-    .screenshot-card {
-      flex: 0 0 280px;
-      scroll-snap-align: start;
-      background: var(--bg-card);
-      border-radius: 24px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.05);
-      transition: all 0.3s ease;
-    }
-
-    .screenshot-card:hover {
-      transform: scale(1.05);
-      border-color: rgba(108, 99, 255, 0.3);
-    }
-
-    .screenshot-img {
-      width: 100%;
-      height: 400px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 4rem;
-    }
-
-    .screenshot-info {
-      padding: 20px;
-    }
-
-    .screenshot-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    .screenshot-desc {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-    }
-
-    /* Testimonials */
+/* Testimonials */
     .testimonials {
       padding: 100px 40px;
       background: linear-gradient(180deg, var(--bg-dark) 0%, #1a1932 50%, var(--bg-dark) 100%);
@@ -1491,47 +1510,159 @@
     </div>
   </section>
 
-  <!-- Screenshots -->
-  <section class="screenshots" id="screenshots">
-    <div class="section-header fade-in">
-      <div class="section-tag">应用展示</div>
-      <h2 class="section-title">精美的界面设计</h2>
-      <p class="section-subtitle">直观简洁的操作体验，让记账成为一种享受</p>
-    </div>
-    <div class="screenshots-scroll">
-      <div class="screenshot-card">
-        <div class="screenshot-img">📱</div>
-        <div class="screenshot-info">
-          <h3 class="screenshot-title">首页总览</h3>
-          <p class="screenshot-desc">一目了然的收支统计，快速了解财务状况</p>
+    <!-- Feature Showcase -->
+  <section class="feature-showcase" id="screenshots">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-tag">功能展示</div>
+        <h2 class="section-title">每一个界面，都经过精心设计</h2>
+        <p class="section-subtitle">从首页到报表，从记账到预算，每一步操作都直观流畅</p>
+      </div>
+
+      <!-- Showcase 1: Home -->
+      <div class="showcase-item fade-in">
+        <div class="showcase-text">
+          <div class="showcase-tag">首页总览</div>
+          <h3 class="showcase-title">一目了然的<br>收支全景</h3>
+          <p class="showcase-desc">首页清晰展示今日收支、月度趋势和预算进度。所有数据实时更新，打开 app 就能掌握最新财务状况。</p>
+          <ul class="showcase-features">
+            <li><span class="material-icons-round">check_circle</span>今日 / 本周 / 本月收支汇总</li>
+            <li><span class="material-icons-round">check_circle</span>最近账目明细快速预览</li>
+            <li><span class="material-icons-round">check_circle</span>预算剩余实时提醒</li>
+            <li><span class="material-icons-round">check_circle</span>支持自定义首页布局</li>
+          </ul>
+        </div>
+        <div class="showcase-visual">
+          <div class="mini-phone">
+            <div class="mini-phone-notch"></div>
+            <div class="mini-phone-screen">
+              <div class="screen-home">
+                <div class="sh-header">
+                  <div class="sh-icon">💰</div>
+                  <div class="sh-title">小账本</div>
+                </div>
+                <div class="sh-total">
+                  <div class="sh-label">本月支出</div>
+                  <div class="sh-val">¥2,580.00</div>
+                </div>
+                <div class="sh-card" style="margin-top:12px">
+                  <div class="sh-row"><div class="sh-emoji">🍔</div><div class="sh-info"><div class="sh-name">午餐 - 麦当劳</div><div class="sh-date">今天 12:30</div></div><div class="sh-amount">-¥35.00</div></div>
+                  <div class="sh-row"><div class="sh-emoji">🚌</div><div class="sh-info"><div class="sh-name">地铁通勤</div><div class="sh-date">今天 08:15</div></div><div class="sh-amount">-¥4.00</div></div>
+                  <div class="sh-row"><div class="sh-emoji">☕</div><div class="sh-info"><div class="sh-name">瑞幸咖啡</div><div class="sh-date">今天 09:02</div></div><div class="sh-amount">-¥9.90</div></div>
+                  <div class="sh-row"><div class="sh-emoji">💰</div><div class="sh-info"><div class="sh-name">工资到账</div><div class="sh-date">昨天 10:00</div></div><div class="sh-amount sh-income">+¥8,500</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="screenshot-card">
-        <div class="screenshot-img">📊</div>
-        <div class="screenshot-info">
-          <h3 class="screenshot-title">数据报表</h3>
-          <p class="screenshot-desc">多维度图表分析，消费趋势尽在掌握</p>
+
+      <!-- Showcase 2: Charts -->
+      <div class="showcase-item reverse fade-in">
+        <div class="showcase-text">
+          <div class="showcase-tag">数据报表</div>
+          <h3 class="showcase-title">用数据看清<br>消费全貌</h3>
+          <p class="showcase-desc">多维度图表分析帮你洞察消费趋势。饼图查看分类占比，柱状图对比月度支出，折线图追踪变化趋势。</p>
+          <ul class="showcase-features">
+            <li><span class="material-icons-round">check_circle</span>环形图展示消费分类占比</li>
+            <li><span class="material-icons-round">check_circle</span>柱状图对比月度支出变化</li>
+            <li><span class="material-icons-round">check_circle</span>折线图追踪收支趋势</li>
+            <li><span class="material-icons-round">check_circle</span>支持按周 / 月 / 年查看</li>
+          </ul>
+        </div>
+        <div class="showcase-visual">
+          <div class="mini-phone">
+            <div class="mini-phone-notch"></div>
+            <div class="mini-phone-screen">
+              <div class="screen-charts">
+                <div class="sc-header"><h4>📊 月度分析</h4><p>2026年8月</p></div>
+                <div class="sc-chart">
+                  <div class="sc-chart-title">消费分类</div>
+                  <div class="pie-chart"></div>
+                  <div class="pie-legend"><span class="l1">餐饮 36%</span><span class="l2">交通 19%</span><span class="l3">购物 17%</span><span class="l4">娱乐 14%</span><span class="l5">其他 14%</span></div>
+                </div>
+                <div class="sc-chart">
+                  <div class="sc-chart-title">月度对比</div>
+                  <div class="bar-chart"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+                  <div class="bar-labels"><span>3月</span><span>4月</span><span>5月</span><span>6月</span><span>7月</span><span>8月</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="screenshot-card">
-        <div class="screenshot-img">➕</div>
-        <div class="screenshot-info">
-          <h3 class="screenshot-title">快速记账</h3>
-          <p class="screenshot-desc">简洁的记账界面，3秒完成一笔记录</p>
+
+      <!-- Showcase 3: Add -->
+      <div class="showcase-item fade-in">
+        <div class="showcase-text">
+          <div class="showcase-tag">快速记账</div>
+          <h3 class="showcase-title">3 秒完成<br>一笔记录</h3>
+          <p class="showcase-desc">简洁直观的记账界面，支持手动输入、拍照识别和语音记账。AI 自动匹配分类，让记账变得毫不费力。</p>
+          <ul class="showcase-features">
+            <li><span class="material-icons-round">check_circle</span>一键选择常用分类</li>
+            <li><span class="material-icons-round">check_circle</span>拍照自动识别小票信息</li>
+            <li><span class="material-icons-round">check_circle</span>语音说一句话就能记账</li>
+            <li><span class="material-icons-round">check_circle</span>AI 智能匹配消费分类</li>
+          </ul>
+        </div>
+        <div class="showcase-visual">
+          <div class="mini-phone">
+            <div class="mini-phone-notch"></div>
+            <div class="mini-phone-screen">
+              <div class="screen-add">
+                <div class="sa-header"><h4>✏️ 记一笔</h4></div>
+                <div class="sa-type"><span class="active">支出</span><span>收入</span><span>转账</span></div>
+                <div class="sa-amount"><div class="sa-label">金额</div><div class="sa-val">¥ 35.00</div></div>
+                <div class="sa-cats">
+                  <div class="sa-cat selected"><div class="sa-cat-icon">🍔</div>餐饮</div>
+                  <div class="sa-cat"><div class="sa-cat-icon">🚌</div>交通</div>
+                  <div class="sa-cat"><div class="sa-cat-icon">🛒</div>购物</div>
+                  <div class="sa-cat"><div class="sa-cat-icon">🎮</div>娱乐</div>
+                  <div class="sa-cat"><div class="sa-cat-icon">🏠</div>住房</div>
+                  <div class="sa-cat"><div class="sa-cat-icon">💊</div>医疗</div>
+                  <div class="sa-cat"><div class="sa-cat-icon">📚</div>教育</div>
+                  <div class="sa-cat"><div class="sa-cat-icon">📦</div>其他</div>
+                </div>
+                <button class="sa-submit">保存记录</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="screenshot-card">
-        <div class="screenshot-img">🎯</div>
-        <div class="screenshot-info">
-          <h3 class="screenshot-title">预算设置</h3>
-          <p class="screenshot-desc">灵活的预算管理，超支自动提醒</p>
+
+      <!-- Showcase 4: Budget -->
+      <div class="showcase-item reverse fade-in">
+        <div class="showcase-text">
+          <div class="showcase-tag">预算管理</div>
+          <h3 class="showcase-title">精打细算<br>不再超支</h3>
+          <p class="showcase-desc">为每个消费类别设定预算上限，系统自动跟踪支出进度。接近或超支时立即推送提醒，帮你守住钱包。</p>
+          <ul class="showcase-features">
+            <li><span class="material-icons-round">check_circle</span>分类预算独立管理</li>
+            <li><span class="material-icons-round">check_circle</span>进度条实时显示使用比例</li>
+            <li><span class="material-icons-round">check_circle</span>超支预警即时推送</li>
+            <li><span class="material-icons-round">check_circle</span>月度预算自动结转</li>
+          </ul>
         </div>
-      </div>
-      <div class="screenshot-card">
-        <div class="screenshot-img">👤</div>
-        <div class="screenshot-info">
-          <h3 class="screenshot-title">个人中心</h3>
-          <p class="screenshot-desc">个性化设置，打造专属记账体验</p>
+        <div class="showcase-visual">
+          <div class="mini-phone">
+            <div class="mini-phone-notch"></div>
+            <div class="mini-phone-screen">
+              <div class="screen-budget">
+                <div class="sb-header"><h4>🎯 本月预算</h4><p>已用 62% · 剩余 ¥1,420</p></div>
+                <div class="sb-total">
+                  <div class="sb-total-row"><span class="sb-label">总预算</span><span class="sb-val">¥5,000</span></div>
+                  <div class="sb-total-row"><span class="sb-label">已支出</span><span class="sb-val" style="color:#FF6584">¥3,580</span></div>
+                  <div class="sb-bar-wrap"><div class="sb-bar-fill" style="width:71%;background:linear-gradient(90deg,#6C63FF,#FF6584)"></div></div>
+                </div>
+                <div class="sb-cats">
+                  <div class="sb-cat"><div class="sb-cat-head"><span class="sb-cat-name">🍔 餐饮</span><span class="sb-cat-val">¥1,200 / ¥1,500</span></div><div class="sb-cat-bar"><div class="sb-cat-fill" style="width:80%;background:#FF6584"></div></div></div>
+                  <div class="sb-cat"><div class="sb-cat-head"><span class="sb-cat-name">🚌 交通</span><span class="sb-cat-val">¥320 / ¥500</span></div><div class="sb-cat-bar"><div class="sb-cat-fill" style="width:64%;background:#00D2FF"></div></div></div>
+                  <div class="sb-cat"><div class="sb-cat-head"><span class="sb-cat-name">🛒 购物</span><span class="sb-cat-val">¥860 / ¥1,200</span></div><div class="sb-cat-bar"><div class="sb-cat-fill" style="width:72%;background:#4ECDC4"></div></div></div>
+                  <div class="sb-cat"><div class="sb-cat-head"><span class="sb-cat-name">🎮 娱乐</span><span class="sb-cat-val">¥180 / ¥500</span></div><div class="sb-cat-bar"><div class="sb-cat-fill" style="width:36%;background:#6C63FF"></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
