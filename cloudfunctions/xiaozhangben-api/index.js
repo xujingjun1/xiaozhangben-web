@@ -7,8 +7,8 @@ function hashPassword(pw) { return crypto.createHash('sha256').update(pw).digest
 
 // 初始化 CloudBase SDK
 const ENV_ID = 'xiaozhangben-d8gpb5dueb5ae2683'
-const SECRET_ID = 'AKIDIYfstiMp9MOEsLbeWDmKE2d7PnLqCMK7'
-const SECRET_KEY = 'umW8bw7A2kHf5OXYTistjMn2Jiy2xiHd'
+const SECRET_ID = process.env.TENCENT_SECRET_ID || ''
+const SECRET_KEY = process.env.TENCENT_SECRET_KEY || ''
 let app, db
 
 function getDB() {
