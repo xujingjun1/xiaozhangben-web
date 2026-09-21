@@ -15,6 +15,13 @@ const PORT = process.env.PORT || 8080
 app.use(cors({ origin: true, credentials: true }))
 app.use(express.json({ limit: '10mb' }))
 
+// ========== ENV VALIDATION ==========
+const requiredEnvVars = ['TENCENT_SECRET_ID', 'TENCENT_SECRET_KEY']
+const missing = requiredEnvVars.filter(k => !process.env[k])
+if (missing.length > 0) {
+  console.warn(`[WARN] Missing environment variables: ${missing.join(', ')}. Some features may not work.`)
+}
+
 // ========== FILE STORAGE ==========
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true })
 
@@ -77,12 +84,13 @@ app.post('/api/auth/login', (req, res) => {
 })
 
 app.post('/api/auth/reset-password', (req, res) => {
-  const { username, newPassword } = req.body
-  if (!username || !newPassword) return res.status(400).json({ error: '请填写完整信息' })
+  const { username, oldPassword, newPassword } = req.body
+  if (!username || !oldPassword || !newPassword) return res.status(400).json({ error: '请填写完整信息' })
   if (newPassword.length < 6) return res.status(400).json({ error: '密码至少6位' })
   const db = loadDB()
   const user = db.users.find(u => u.username === username)
   if (!user) return res.status(400).json({ error: '账号不存在' })
+  if (hashPassword(oldPassword) !== user.password) return res.status(400).json({ error: '旧密码错误' })
   user.password = hashPassword(newPassword)
   saveDB(db)
   res.json({ success: true, message: '密码重置成功' })
@@ -197,6 +205,58 @@ app.get('/api/feedbacks', authMiddleware, (req, res) => {
 app.get('/api/feedbacks/all', authMiddleware, (req, res) => {
   const db = loadDB()
   res.json(db.feedbacks.sort((a, b) => b.createdAt.localeCompare(a.createdAt)))
+})
+
+// ========== BAIDU OCR ==========
+let baiduAccessToken = null
+let baiduTokenExpiry = 0
+
+async function getBaiduAccessToken(apiKey, secretKey) {
+  if (baiduAccessToken && Date.now() < baiduTokenExpiry) return baiduAccessToken
+  const url = `https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=${apiKey}&client_secret=${secretKey}`
+  const res = await fetch(url, { method: 'POST' })
+  const data = await res.json()
+  if (data.access_token) {
+    baiduAccessToken = data.access_token
+    baiduTokenExpiry = Date.now() + 25 * 24 * 60 * 60 * 1000
+    return baiduAccessToken
+  }
+  throw new Error(data.error_description || '获取 access_token 失败')
+}
+
+app.post('/api/ocr/baidu', async (req, res) => {
+  const { image, apiKey, secretKey, type = 'accurate' } = req.body
+  if (!image) return res.status(400).json({ error: '缺少图片数据' })
+  const ak = apiKey || process.env.BAIDU_OCR_API_KEY
+  const sk = secretKey || process.env.BAIDU_OCR_SECRET_KEY
+  if (!ak || !sk) return res.status(400).json({ error: '未配置百度 OCR 密钥' })
+  try {
+    const token = await getBaiduAccessToken(ak, sk)
+    const apiUrl = type === 'accurate'
+      ? `https://aip.baidubce.com/rest/2.0/ocr/v1/accurate_basic?access_token=${token}`
+      : `https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic?access_token=${token}`
+    const ocrRes = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `image=${encodeURIComponent(image)}`,
+    })
+    const ocrData = await ocrRes.json()
+    if (ocrData.error_code) return res.status(400).json({ error: `百度OCR错误: ${ocrData.error_msg}` })
+    const text = (ocrData.words_result || []).map(item => item.words).join('\n')
+    res.json({ success: true, text, lines: ocrData.words_result || [], wordsNum: ocrData.words_result?.length || 0 })
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+})
+
+app.post('/api/ocr/verify', async (req, res) => {
+  const { apiKey, secretKey } = req.body
+  try {
+    await getBaiduAccessToken(apiKey, secretKey)
+    res.json({ success: true, message: '密钥验证成功' })
+  } catch (e) {
+    res.status(400).json({ error: e.message })
+  }
 })
 
 // ========== SERVE FRONTEND ==========

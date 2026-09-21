@@ -28,3 +28,6 @@ api/.env
 *.sln
 *.sw?
 .vite
+
+# Old build artifacts
+deploy

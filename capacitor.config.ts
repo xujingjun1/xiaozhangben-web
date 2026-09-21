@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.xiaozhangben.app',
-  appName: '–°’À±æ',
+  appName: 'xiaozhangben',
   webDir: 'dist',
   server: {
     androidScheme: 'https',

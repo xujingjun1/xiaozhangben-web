@@ -7,5 +7,13 @@ services:
     startCommand: node server.js
     healthCheckPath: /api/health
     envVars:
-      - key: PORT
-        value: 8080
+    - key: PORT
+      value: 8080
+    - key: TENCENT_SECRET_ID
+      sync: false
+    - key: TENCENT_SECRET_KEY
+      sync: false
+    - key: BAIDU_OCR_API_KEY
+      sync: false
+    - key: BAIDU_OCR_SECRET_KEY
+      sync: false

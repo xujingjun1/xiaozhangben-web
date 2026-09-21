@@ -244,8 +244,8 @@ function createExpense(amount: number, category: string, description: string, da
 
 // --- OCR (Image Mode) ---
 // 百度 OCR 配置（从 localStorage 读取）
-const baiduApiKey = ref(localStorage.getItem('baidu_api_key') || '8v6iG3EDWYCTm20zmgFMhloC')
-const baiduSecretKey = ref(localStorage.getItem('baidu_secret_key') || 'HB1l9SeDXZc3QyAULAAvnogVAtFaaonO')
+const baiduApiKey = ref(localStorage.getItem('baidu_api_key') || '')
+const baiduSecretKey = ref(localStorage.getItem('baidu_secret_key') || '')
 const showBaiduConfig = ref(false)
 const tempApiKey = ref('')
 const tempSecretKey = ref('')
