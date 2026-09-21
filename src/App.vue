@@ -1,24 +1,20 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import { RouterView, useRoute } from 'vue-router'
 import TabBar from './components/TabBar.vue'
+import Sidebar from './components/Sidebar.vue'
+import { useDesktop } from './composables/useDesktop'
+
+const { isDesktop } = useDesktop()
+const route = useRoute()
+const hideTabBar = ['login'].includes(route.name as string)
 </script>
 
 <template>
-  <div class="min-h-screen bg-background max-w-[480px] mx-auto relative pb-20">
-    <RouterView v-slot="{ Component }">
-      <transition name="fade" mode="out-in">
-        <component :is="Component" />
-      </transition>
-    </RouterView>
-    <TabBar />
+  <div class="app-shell" :class="isDesktop ? 'app-shell--desktop' : 'app-shell--mobile'">
+    <Sidebar v-if="isDesktop" />
+    <main class="app-main" :class="isDesktop ? 'app-main--desktop' : 'app-main--mobile'">
+      <RouterView />
+    </main>
+    <TabBar v-if="!isDesktop && !hideTabBar" />
   </div>
 </template>
-
-<style scoped>
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-.fade-enter-from, .fade-leave-to {
-  opacity: 0;
-}
-</style>
