@@ -12,8 +12,17 @@
       "destination": "/landing.html"
     },
     {
-      "source": "/((?!api/).*)",
+      "source": "/((?!api/)(?!app-latest\\.apk$).*)",
       "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/app-latest.apk",
+      "headers": [
+        { "key": "Content-Type", "value": "application/vnd.android.package-archive" },
+        { "key": "Content-Disposition", "value": "attachment; filename=\"xiaozhangben.apk\"" }
+      ]
     }
   ]
 }
