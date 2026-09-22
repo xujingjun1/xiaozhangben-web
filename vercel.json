@@ -2,20 +2,32 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "installCommand": "npm install",
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/app", "destination": "/index.html" },
-    { "source": "/app/(.*)", "destination": "/index.html" },
-    { "source": "/", "destination": "/landing.html" },
-    { "source": "/((?!api/)(?!app-latest\\.apk$)(?!app$)(?!app/).*)", "destination": "/landing.html" }
-  ],
-  "headers": [
+  "cleanUrls": false,
+  "trailingSlash": false,
+  "routes": [
     {
-      "source": "/app-latest.apk",
-      "headers": [
-        { "key": "Content-Type", "value": "application/vnd.android.package-archive" },
-        { "key": "Content-Disposition", "value": "attachment; filename=\"xiaozhangben.apk\"" }
-      ]
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/app-latest\\.apk",
+      "dest": "/app-latest.apk",
+      "headers": {
+        "Content-Type": "application/vnd.android.package-archive",
+        "Content-Disposition": "attachment; filename=\"xiaozhangben.apk\""
+      }
+    },
+    {
+      "src": "^/app(?:\\/.*)?$",
+      "dest": "/index.html"
+    },
+    {
+      "src": "^\\/$",
+      "dest": "/landing.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/landing.html"
     }
   ]
 }
