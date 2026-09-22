@@ -3,18 +3,10 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    },
-    {
-      "source": "/landing(.*)",
-      "destination": "/landing.html"
-    },
-    {
-      "source": "/((?!api/)(?!app-latest\\.apk$).*)",
-      "destination": "/index.html"
-    }
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/app", "destination": "/index.html" },
+    { "source": "/app/(.*)", "destination": "/index.html" },
+    { "source": "/((?!api/)(?!app-latest\\.apk$)(?!app$)(?!app/).*)", "destination": "/landing.html" }
   ],
   "headers": [
     {

@@ -1350,7 +1350,7 @@
         <li><a href="#screenshots">应用截图</a></li>
         <li><a href="#testimonials">用户评价</a></li>
       </ul>
-      <button class="nav-cta" onclick="scrollToDownload()">立即下载</button>
+      <button class="nav-cta" onclick="handleNavCta()">立即使用</button>
       <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
     </div>
   </nav>
@@ -1365,10 +1365,10 @@
           小账本是一款简洁高效的个人记账应用，帮助你轻松管理收支、设置预算、分析消费习惯，让理财变得简单有趣。
         </p>
         <div class="hero-buttons">
-          <a href="https://xiaozhangben-web.vercel.app" class="btn-primary">
-            <span>📱</span> 立即使用
+          <a id="heroBtn1" href="/app" class="btn-primary">
+            <span id="heroBtn1Icon">📱</span> <span id="heroBtn1Text">打开网页版</span>
           </a>
-          <a href="#features" class="btn-secondary">了解更多</a>
+          <a id="heroBtn2" href="#features" class="btn-secondary">了解更多</a>
         </div>
         <div class="hero-stats">
           <div class="stat-item">
@@ -1718,11 +1718,11 @@
       <h2 class="download-title">开始你的理财之旅</h2>
       <p class="download-subtitle">免费使用，无需付费。现在就加入，和万千用户一起养成记账好习惯！</p>
       <div class="download-buttons">
-        <a href="https://xiaozhangben-web.vercel.app" class="download-btn download-btn-primary">
-          <span>📱</span> 打开应用
+        <a id="dlBtn1" href="/app" class="download-btn download-btn-primary">
+          <span id="dlBtn1Icon">💻</span> <span id="dlBtn1Text">打开网页版</span>
         </a>
-        <a href="https://xiaozhangben-web.vercel.app" class="download-btn download-btn-secondary">
-          <span>💻</span> 网页版
+        <a id="dlBtn2" href="/app-latest.apk" class="download-btn download-btn-secondary" style="display:none">
+          <span>📱</span> 下载 App
         </a>
       </div>
       <div class="download-qr">
@@ -1873,6 +1873,27 @@
     navLinks.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', closeMenu);
     });
+
+    // === Device detection ===
+    const isAndroid = /android/i.test(navigator.userAgent);
+    const appUrl = '/app';
+    const apkUrl = '/app-latest.apk';
+
+    if (isAndroid) {
+      // Hero buttons
+      document.getElementById('heroBtn1').href = apkUrl;
+      document.getElementById('heroBtn1Icon').textContent = '📱';
+      document.getElementById('heroBtn1Text').textContent = '下载 App';
+      // Download section
+      document.getElementById('dlBtn1').href = appUrl;
+      document.getElementById('dlBtn1Icon').textContent = '💻';
+      document.getElementById('dlBtn1Text').textContent = '网页版';
+      document.getElementById('dlBtn2').style.display = '';
+    }
+
+    function handleNavCta() {
+      window.location.href = isAndroid ? apkUrl : appUrl;
+    }
   </script>
 </body>
 </html>
