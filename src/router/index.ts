@@ -3,6 +3,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
+    { path: '/landing', name: 'landing', component: () => import('@/views/LandingView.vue') },
     { path: '/login', name: 'login', component: () => import('@/views/LoginView.vue') },
     { path: '/', name: 'home', component: () => import('@/views/HomeView.vue') },
     { path: '/add', name: 'add', component: () => import('@/views/AddView.vue') },
@@ -22,9 +23,12 @@ const router = createRouter({
 router.beforeEach((to) => {
   const userId = localStorage.getItem('user_id')
 
+  // Landing page always accessible
+  if (to.name === 'landing') return
+
   // Not logged in -> redirect to login
   if (!userId && to.name !== 'login') {
-    return { name: 'login' }
+    return { name: 'landing' }
   }
 
   // Already logged in -> redirect away from login
