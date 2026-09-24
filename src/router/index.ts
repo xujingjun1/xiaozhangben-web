@@ -23,8 +23,11 @@ const router = createRouter({
 router.beforeEach((to) => {
   const userId = localStorage.getItem('user_id')
 
-  // Landing page always accessible
-  if (to.name === 'landing') return
+  // Logged-in users should not stay on landing page
+  if (to.name === 'landing') {
+    if (userId) return { name: 'home' }
+    return
+  }
 
   // Not logged in -> redirect to login
   if (!userId && to.name !== 'login') {

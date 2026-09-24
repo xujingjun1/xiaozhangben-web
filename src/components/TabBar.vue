@@ -20,7 +20,7 @@ function isActive(path: string) {
 </script>
 
 <template>
-  <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] bg-white/95 backdrop-blur-lg border-t border-black/5 z-40">
+  <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] bg-white/95 backdrop-blur-lg border-t border-black/5 z-40" aria-label="主导航">
     <div class="flex items-center justify-around px-2 py-2">
       <template v-for="(tab, i) in tabs" :key="tab.path">
         <!-- Add Button (after 首页) -->
@@ -44,5 +44,5 @@ function isActive(path: string) {
         </button>
       </template>
     </div>
-  </div>
+  </nav>
 </template>
