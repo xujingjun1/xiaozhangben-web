@@ -4,7 +4,6 @@ import { useExpenseStore } from '@/stores/expense'
 import { useDesktop } from '@/composables/useDesktop'
 import { formatMoney, getCategoryInfo, categories } from '@/utils/helpers'
 import dayjs from 'dayjs'
-import type { Budget } from '@/db'
 
 const store = useExpenseStore()
 const { isDesktop } = useDesktop()
@@ -69,6 +68,11 @@ async function addBudget() {
       <span class="text-base font-semibold text-txt">{{ store.selectedYear }}年{{ store.selectedMonth }}月</span>
       <button @click="nextMonth" class="p-2 rounded-xl hover:bg-surface"><span class="material-icons-round text-txt-secondary">chevron_right</span></button>
     </div>
+
+    <p v-if="store.budgetError" class="rounded-2xl bg-error/5 border border-error/20 p-3 mb-4 text-xs text-error">
+      {{ store.budgetError }}
+      <button @click="store.loadBudgets()" class="ml-2 underline">重试</button>
+    </p>
 
     <div :class="isDesktop ? 'desktop-grid' : ''">
       <!-- Budget Overview -->
@@ -139,7 +143,7 @@ async function addBudget() {
             <div class="w-full h-1.5 bg-surface rounded-full overflow-hidden">
               <div class="h-full rounded-full transition-all duration-500"
                 :class="getBudgetSpent(budget.category) > budget.amount ? 'bg-error' : 'bg-primary'"
-                :style="{ width: Math.min((getBudgetSpent(budget.category) / budget.amount) * 100, 100) + '%' }">
+                :style="{ width: budget.amount > 0 ? Math.min((getBudgetSpent(budget.category) / budget.amount) * 100, 100) + '%' : '0%' }">
               </div>
             </div>
             <div v-if="getBudgetSpent(budget.category) > budget.amount" class="flex items-center gap-1 mt-2">

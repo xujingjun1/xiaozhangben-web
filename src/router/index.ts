@@ -16,6 +16,8 @@ const router = createRouter({
     { path: '/privacy', name: 'privacy', component: () => import('@/views/PrivacyView.vue') },
     { path: '/help', name: 'help', component: () => import('@/views/HelpView.vue') },
     { path: '/download', name: 'download', component: () => import('@/views/DownloadView.vue') },
+    // 兜底：未匹配的路由重定向首页（未登录时由下方守卫再转落地页）
+    { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 })
 

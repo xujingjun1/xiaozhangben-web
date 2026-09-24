@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { api } from '@/services/api'
 
 const router = useRouter()
 const rating = ref(0)
@@ -12,30 +13,15 @@ function setRating(value: number) {
   rating.value = value
 }
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
-
 async function submitRating() {
   if (rating.value === 0 || submitting.value) return
   submitting.value = true
-  
+
   try {
-    const userId = localStorage.getItem('user_id')
-    const res = await fetch(`${API_URL}/ratings`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-User-Id': userId || '',
-      },
-      body: JSON.stringify({ rating: rating.value }),
-    })
-    
-    if (res.ok) {
-      submitted.value = true
-    } else {
-      alert('提交失败，请重试')
-    }
-  } catch (e) {
-    alert('网络错误，请重试')
+    await api.submitRating(rating.value)
+    submitted.value = true
+  } catch (e: any) {
+    alert(e?.message || '提交失败，请重试')
   } finally {
     submitting.value = false
   }

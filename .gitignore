@@ -31,3 +31,15 @@ api/.env
 
 # Old build artifacts
 deploy
+
+# ============ 运行时数据（含用户隐私，禁止入库）============
+/data/
+api/data/db.json
+api/data/db.json.bak*
+api/data/backups/
+*.genie
+
+# ============ 发布包与测试产物 ============
+deploy-pkg/
+qa-screenshots/
+.workbuddy/

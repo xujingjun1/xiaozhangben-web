@@ -19,9 +19,31 @@ async function request(path: string, options: RequestInit = {}) {
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string> || {}),
   }
-  if (userId) headers['X-User-Id'] = userId
+  if (userId) {
+    // User-Id 可穿过平台网关（X-User-Id 会被剥离、Authorization 会被改写，均仅作兼容回退）
+    headers['User-Id'] = userId
+    headers['Authorization'] = `Bearer ${userId}`
+    headers['X-User-Id'] = userId
+  }
 
-  const res = await fetch(`${getBaseUrl()}${path}`, { ...options, headers })
+  // 默认 15 秒超时，避免请求长时间挂起；调用方也可传入自己的 signal
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 15000)
+  let res: Response
+  try {
+    res = await fetch(`${getBaseUrl()}${path}`, { ...options, headers, signal: options.signal || controller.signal })
+  } catch (e: any) {
+    if (e?.name === 'AbortError') throw new Error('请求超时，请检查网络后重试')
+    throw e
+  } finally {
+    clearTimeout(timeout)
+  }
+
+  const contentType = res.headers.get('content-type') || ''
+  if (!contentType.includes('application/json')) {
+    if (!res.ok) throw new Error(`请求失败(${res.status})`)
+    return res.text()
+  }
   const data = await res.json()
   if (!res.ok) throw new Error(data.error || '请求失败')
   return data
@@ -52,7 +74,9 @@ export const api = {
   // Expenses
   getExpenses: () => request('/expenses'),
   addExpense: (expense: any) => request('/expenses', { method: 'POST', body: JSON.stringify(expense) }),
+  updateExpense: (id: string, expense: any) => request(`/expenses/${id}`, { method: 'PUT', body: JSON.stringify(expense) }),
   deleteExpense: (id: string) => request(`/expenses/${id}`, { method: 'DELETE' }),
+  clearExpenses: () => request('/expenses', { method: 'DELETE' }),
 
   // Budgets
   getBudgets: (year: number, month: number) => request(`/budgets?year=${year}&month=${month}`),
@@ -66,4 +90,17 @@ export const api = {
 
   // Export
   exportData: () => request('/export'),
+
+  // OCR
+  getOcrConfig: () => request('/ocr/config'),
+  ocrBaidu: (payload: { image: string; apiKey?: string; secretKey?: string; type?: string }) =>
+    request('/ocr/baidu', { method: 'POST', body: JSON.stringify(payload) }),
+  verifyOcrKeys: (apiKey: string, secretKey: string) =>
+    request('/ocr/verify', { method: 'POST', body: JSON.stringify({ apiKey, secretKey }) }),
+
+  // Ratings / Feedback
+  submitRating: (rating: number) =>
+    request('/ratings', { method: 'POST', body: JSON.stringify({ rating }) }),
+  submitFeedback: (payload: { type?: string; content: string; contact?: string }) =>
+    request('/feedbacks', { method: 'POST', body: JSON.stringify(payload) }),
 }

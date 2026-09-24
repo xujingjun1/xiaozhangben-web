@@ -1,0 +1,21 @@
+// 线上站点布局修复验证
+import { chromium } from 'file:///C:/Users/许境钧/.workbuddy/binaries/node/workspace/node_modules/playwright-core/index.mjs'
+const browser = await chromium.launch({ executablePath: 'C:/Users/许境钧/.agent-browser/browsers/chrome-154.0.8037.57/chrome.exe' })
+const page = await (await browser.newContext({ viewport: { width: 1440, height: 900 } })).newPage()
+const errors = []
+page.on('pageerror', e => errors.push(e.message.slice(0, 150)))
+await page.goto('https://xiaozhangben-ledger-88116.app.workbuddy.host/', { waitUntil: 'domcontentloaded', timeout: 30000 })
+await page.waitForTimeout(3500)
+console.log('URL:', page.url())
+console.log('落地页不显示侧边栏:', !(await page.locator('.desktop-sidebar').isVisible().catch(() => false)))
+console.log('主内容margin:', await page.evaluate(() => getComputedStyle(document.querySelector('.app-main')).marginLeft))
+const y0 = await page.evaluate(() => window.scrollY)
+await page.click('a.lb2:has-text("了解更多")')
+await page.waitForTimeout(1200)
+console.log('了解更多滚动:', y0, '→', await page.evaluate(() => window.scrollY))
+await page.click('a.lb1:has-text("打开网页版")')
+await page.waitForTimeout(1500)
+console.log('打开网页版后 URL:', page.url())
+await page.screenshot({ path: 'D:/xjj/1/xiaozhangben-web/qa-screenshots/45-online-landing-fixed.png' })
+console.log('页面错误:', errors.length ? errors.join('; ') : '无')
+await browser.close()

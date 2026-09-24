@@ -1,181 +1,56 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useExpenseStore } from '@/stores/expense'
 import { useDesktop } from '@/composables/useDesktop'
-import { api, getApiUrl, setApiUrl, resetApiUrl } from '@/services/api'
+import { useProfileSettings } from '@/composables/useProfileSettings'
+import { useReminderSettings } from '@/composables/useReminderSettings'
+import { useDataManagement } from '@/composables/useDataManagement'
+import { useServerSettings } from '@/composables/useServerSettings'
 
 const router = useRouter()
 const store = useExpenseStore()
 const { isDesktop } = useDesktop()
 const version = 'v1.0.0'
-const userInfo = ref<{ id: string; username: string; nickname: string } | null>(null)
-
-const profile = ref({ bio: '', birthday: '', hobbies: '', dream: '' })
-const editing = ref(false)
-const saving = ref(false)
-const saveMsg = ref('')
-
-// Server sync config
-const serverUrl = ref(getApiUrl())
-const editingServerUrl = ref(false)
-const tempServerUrl = ref('')
-const serverTestMsg = ref('')
-const serverTestStatus = ref<'ok' | 'fail' | ''>('')
-
 const darkMode = ref(false)
 
-function toggleDarkMode() {
-  darkMode.value = !darkMode.value
-  document.documentElement.classList.toggle('dark', darkMode.value)
-  localStorage.setItem('dark_mode', darkMode.value ? '1' : '0')
-}
+const {
+  userInfo, profile, editing, saving, saveMsg, editNickname, editingNickname, nicknameSaving,
+  avatarUrl, avatarUploading, fileInput,
+  loadProfile, startEditNickname, cancelEditNickname, saveNickname,
+  triggerAvatarUpload, onAvatarChange, startEdit, saveProfile, cancelEdit,
+} = useProfileSettings()
 
-const editNickname = ref('')
-const editingNickname = ref(false)
-const nicknameSaving = ref(false)
+const {
+  reminderSupported, reminderEnabled, reminderTime, reminderPermission, reminderMsg,
+  initReminder, toggleReminder, changeReminderTime,
+} = useReminderSettings()
 
-const avatarUrl = ref('')
-const avatarUploading = ref(false)
-const fileInput = ref<HTMLInputElement | null>(null)
+const {
+  dataMsg, dataMsgOk, restoring, restoringProgress, restoreInput, clearing,
+  exportCSV, exportData, onRestoreFile, clearAllData,
+} = useDataManagement()
+
+const {
+  serverUrl, editingServerUrl, tempServerUrl, serverTestMsg, serverTestStatus,
+  startEditServerUrl, cancelEditServerUrl, saveServerUrl, testServerConnection,
+} = useServerSettings()
 
 onMounted(async () => {
   await store.init()
-  const info = localStorage.getItem('user_info')
-  if (info) {
-    userInfo.value = JSON.parse(info)
-    editNickname.value = userInfo.value?.nickname || ''
-  }
   const savedDarkMode = localStorage.getItem('dark_mode')
   if (savedDarkMode === '1') {
     darkMode.value = true
     document.documentElement.classList.add('dark')
   }
-  const savedAvatar = localStorage.getItem('user_avatar')
-  if (savedAvatar) avatarUrl.value = savedAvatar
-  try {
-    const data = await api.getProfile()
-    profile.value = data
-    if (data.avatar) avatarUrl.value = data.avatar
-  } catch {}
+  initReminder()
+  await loadProfile()
 })
 
-function startEditNickname() {
-  editingNickname.value = true
-  saveMsg.value = ''
-}
-function cancelEditNickname() {
-  editingNickname.value = false
-  editNickname.value = userInfo.value?.nickname || ''
-}
-async function saveNickname() {
-  if (!editNickname.value.trim()) { saveMsg.value = '昵称不能为空'; return }
-  nicknameSaving.value = true
-  try {
-    await api.updateProfile({ nickname: editNickname.value.trim() })
-    if (userInfo.value) {
-      userInfo.value.nickname = editNickname.value.trim()
-      localStorage.setItem('user_info', JSON.stringify(userInfo.value))
-    }
-    saveMsg.value = '昵称修改成功!'
-    editingNickname.value = false
-    setTimeout(() => saveMsg.value = '', 2000)
-  } catch (e: any) {
-    saveMsg.value = '修改失败: ' + e.message
-  } finally { nicknameSaving.value = false }
-}
-
-function triggerAvatarUpload() { fileInput.value?.click() }
-async function onAvatarChange(e: Event) {
-  const file = (e.target as HTMLInputElement).files?.[0]
-  if (!file) return
-  if (!file.type.startsWith('image/')) { saveMsg.value = '请选择图片文件'; return }
-  if (file.size > 2 * 1024 * 1024) { saveMsg.value = '图片大小不能超过 2MB'; return }
-  avatarUploading.value = true
-  saveMsg.value = ''
-  const reader = new FileReader()
-  reader.onload = async (event) => {
-    const base64 = event.target?.result as string
-    avatarUrl.value = base64
-    localStorage.setItem('user_avatar', base64)
-    try { await api.updateProfile({ avatar: base64 }); saveMsg.value = '头像更新成功!' } catch {}
-    setTimeout(() => saveMsg.value = '', 2000)
-    avatarUploading.value = false
-  }
-  reader.readAsDataURL(file)
-}
-
-function startEdit() { editing.value = true; saveMsg.value = '' }
-async function saveProfile() {
-  saving.value = true; saveMsg.value = ''
-  try {
-    const res = await api.updateProfile(profile.value)
-    profile.value = res.profile
-    saveMsg.value = '保存成功!'
-    editing.value = false
-    setTimeout(() => saveMsg.value = '', 2000)
-  } catch (e: any) { saveMsg.value = '保存失败: ' + e.message }
-  finally { saving.value = false }
-}
-function cancelEdit() {
-  editing.value = false
-  api.getProfile().then(data => { profile.value = data }).catch(() => {})
-}
-
-async function exportData() {
-  try {
-    const data = await api.exportData()
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = '小账本数据_' + new Date().toLocaleDateString() + '.json'
-    a.click()
-    URL.revokeObjectURL(url)
-  } catch { alert('导出失败') }
-}
-
-function startEditServerUrl() {
-  tempServerUrl.value = serverUrl.value
-  editingServerUrl.value = true
-  serverTestMsg.value = ''
-  serverTestStatus.value = ''
-}
-
-function cancelEditServerUrl() {
-  editingServerUrl.value = false
-  serverTestMsg.value = ''
-}
-
-function saveServerUrl() {
-  const url = tempServerUrl.value.trim().replace(/\/+$/, '')
-  if (!url) { resetApiUrl(); serverUrl.value = getApiUrl(); editingServerUrl.value = false; return }
-  setApiUrl(url)
-  serverUrl.value = url
-  editingServerUrl.value = false
-  serverTestMsg.value = '服务器地址已更新，刷新后生效'
-  serverTestStatus.value = 'ok'
-  setTimeout(() => serverTestMsg.value = '', 3000)
-}
-
-async function testServerConnection() {
-  const url = (tempServerUrl.value || serverUrl.value).trim().replace(/\/+$/, '')
-  if (!url) return
-  serverTestMsg.value = '正在测试连接...'
-  serverTestStatus.value = ''
-  try {
-    const res = await fetch(url + '/health', { method: 'GET', signal: AbortSignal.timeout(5000) })
-    if (res.ok) {
-      serverTestMsg.value = '连接成功!'
-      serverTestStatus.value = 'ok'
-    } else {
-      serverTestMsg.value = '服务器返回错误 ' + res.status
-      serverTestStatus.value = 'fail'
-    }
-  } catch {
-    serverTestMsg.value = '无法连接到服务器'
-    serverTestStatus.value = 'fail'
-  }
+function toggleDarkMode() {
+  darkMode.value = !darkMode.value
+  document.documentElement.classList.toggle('dark', darkMode.value)
+  localStorage.setItem('dark_mode', darkMode.value ? '1' : '0')
 }
 
 function logout() {
@@ -345,18 +220,84 @@ function logout() {
           </button>
         </div>
 
+        <!-- 记账提醒 -->
+        <div class="bg-white rounded-2xl mb-6">
+          <div class="px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-surface flex items-center justify-center">
+                <span class="material-icons-round text-primary text-lg">alarm</span>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-txt">每日记账提醒</p>
+                <p class="text-xs text-txt-hint">{{ reminderSupported ? '到点弹通知，养成记账习惯' : '当前浏览器不支持通知' }}</p>
+              </div>
+            </div>
+            <button @click="toggleReminder"
+              :disabled="!reminderSupported"
+              class="relative w-12 h-6 rounded-full transition-colors duration-300 shrink-0"
+              :class="reminderEnabled ? 'bg-primary' : 'bg-gray-300'">
+              <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300" :class="reminderEnabled ? 'translate-x-6' : 'translate-x-0'"></span>
+            </button>
+          </div>
+          <template v-if="reminderSupported">
+            <div class="mx-4 h-px bg-surface"></div>
+            <div class="px-4 py-3 flex items-center gap-3">
+              <span class="text-xs text-txt-secondary">提醒时间</span>
+              <input v-model="reminderTime" type="time" @change="changeReminderTime"
+                class="bg-surface rounded-xl px-3 py-1.5 text-sm text-txt outline-none focus:ring-2 focus:ring-primary/30 transition" />
+              <span v-if="reminderPermission !== 'granted'" class="text-[11px] text-amber-500 ml-auto">
+                {{ reminderPermission === 'denied' ? '通知权限被拒绝' : '未授权通知' }}
+              </span>
+              <span v-else class="material-icons-round text-green-500 text-sm ml-auto">check_circle</span>
+            </div>
+          </template>
+          <p v-if="reminderMsg" class="px-4 pb-3 text-xs" :class="reminderMsg.includes('拒绝') || reminderMsg.includes('不支持') ? 'text-amber-500' : 'text-green-500'">{{ reminderMsg }}</p>
+        </div>
+
         <!-- Data Management -->
         <h2 class="text-base font-semibold text-txt mb-3">数据管理</h2>
-        <div class="bg-white rounded-2xl mb-6">
+        <div class="bg-white rounded-2xl mb-2">
+          <input ref="restoreInput" type="file" accept="application/json,.json" class="hidden" @change="onRestoreFile" />
           <button @click="exportData" class="w-full flex items-center gap-3 px-4 py-4 hover:bg-surface/50 transition rounded-2xl">
             <div class="w-9 h-9 rounded-xl bg-surface flex items-center justify-center">
-              <span class="material-icons-round text-primary text-lg">download</span>
+              <span class="material-icons-round text-primary text-lg">cloud_download</span>
             </div>
-            <span class="flex-1 text-sm font-medium text-txt">导出数据</span>
+            <span class="flex-1 text-sm font-medium text-txt">备份数据（JSON）</span>
             <span class="material-icons-round text-txt-hint">chevron_right</span>
           </button>
           <div class="mx-4 h-px bg-surface"></div>
-          <button @click="logout" class="w-full flex items-center gap-3 px-4 py-4 hover:bg-surface/50 transition rounded-2xl">
+          <button @click="exportCSV" class="w-full flex items-center gap-3 px-4 py-4 hover:bg-surface/50 transition rounded-2xl">
+            <div class="w-9 h-9 rounded-xl bg-surface flex items-center justify-center">
+              <span class="material-icons-round text-primary text-lg">table_view</span>
+            </div>
+            <span class="flex-1 text-sm font-medium text-txt">导出明细（CSV）</span>
+            <span class="text-xs text-txt-hint">Excel 可打开</span>
+            <span class="material-icons-round text-txt-hint">chevron_right</span>
+          </button>
+          <div class="mx-4 h-px bg-surface"></div>
+          <button @click="restoreInput?.click()" :disabled="restoring"
+            class="w-full flex items-center gap-3 px-4 py-4 hover:bg-surface/50 transition rounded-2xl disabled:opacity-50">
+            <div class="w-9 h-9 rounded-xl bg-surface flex items-center justify-center">
+              <span class="material-icons-round text-primary text-lg">restore</span>
+            </div>
+            <span class="flex-1 text-sm font-medium text-txt">{{ restoring ? (restoringProgress || '恢复中...') : '从备份恢复' }}</span>
+            <span v-if="!restoring" class="material-icons-round text-txt-hint">chevron_right</span>
+          </button>
+          <div class="mx-4 h-px bg-surface"></div>
+          <button @click="clearAllData" :disabled="clearing"
+            class="w-full flex items-center gap-3 px-4 py-4 hover:bg-error/5 transition rounded-2xl disabled:opacity-50">
+            <div class="w-9 h-9 rounded-xl bg-surface flex items-center justify-center">
+              <span class="material-icons-round text-error text-lg">delete_forever</span>
+            </div>
+            <span class="flex-1 text-sm font-medium text-error">{{ clearing ? '清空中...' : '清空账本记录' }}</span>
+            <span v-if="!clearing" class="material-icons-round text-txt-hint">chevron_right</span>
+          </button>
+        </div>
+        <p v-if="dataMsg" class="text-center text-xs mb-4" :class="dataMsgOk ? 'text-green-500' : 'text-error'">{{ dataMsg }}</p>
+
+        <!-- 退出登录 -->
+        <div class="bg-white rounded-2xl mb-6">
+          <button @click="logout" class="w-full flex items-center gap-3 px-4 py-4 hover:bg-error/5 transition rounded-2xl">
             <div class="w-9 h-9 rounded-xl bg-surface flex items-center justify-center">
               <span class="material-icons-round text-error text-lg">logout</span>
             </div>

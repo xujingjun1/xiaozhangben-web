@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useExpenseStore } from '@/stores/expense'
 import { useDesktop } from '@/composables/useDesktop'
@@ -19,6 +19,7 @@ const selectedTags = ref<string[]>([])
 const isIncome = ref(false)
 const selectedDate = ref(dayjs().format('YYYY-MM-DD'))
 const editId = ref<string | null>(null)
+const errorMsg = ref('')
 
 const isEditing = computed(() => !!editId.value)
 
@@ -38,12 +39,21 @@ onMounted(async () => {
   }
 })
 
+let descTimer: ReturnType<typeof setTimeout> | null = null
+
 function onDescInput() {
-  if (description.value) {
+  if (descTimer) clearTimeout(descTimer)
+  if (!description.value.trim()) return
+  // 防抖：避免每输入一个字就跑一遍 TF-IDF 模糊匹配
+  descTimer = setTimeout(() => {
     const suggested = classifyTop(description.value)
     if (suggested !== '其他') selectedCategory.value = suggested
-  }
+  }, 250)
 }
+
+onUnmounted(() => {
+  if (descTimer) clearTimeout(descTimer)
+})
 
 function onCategoryCorrect(category: string) {
   if (description.value) {
@@ -56,6 +66,7 @@ const trainingInfo = computed(() => getTrainingStats())
 async function save() {
   const num = parseFloat(amount.value)
   if (!num || num <= 0) return
+  errorMsg.value = ''
 
   const expense: Expense = {
     id: editId.value || generateId(),
@@ -68,12 +79,16 @@ async function save() {
     createdAt: dayjs().toISOString(),
   }
 
-  if (isEditing.value) {
-    await store.updateExpense(expense)
-  } else {
-    await store.addExpense(expense)
+  try {
+    if (isEditing.value) {
+      await store.updateExpense(expense)
+    } else {
+      await store.addExpense(expense)
+    }
+    router.back()
+  } catch (e: any) {
+    errorMsg.value = e?.message === 'Failed to fetch' ? '网络连接失败，请检查网络' : (e?.message || '保存失败，请重试')
   }
-  router.back()
 }
 </script>
 
@@ -182,6 +197,7 @@ async function save() {
       />
 
       <!-- Save Button -->
+      <p v-if="errorMsg" class="text-error text-xs text-center mb-3">{{ errorMsg }}</p>
       <button
         @click="save"
         class="w-full py-4 bg-gradient-to-r from-primary to-primary-light text-white text-lg font-semibold rounded-2xl shadow-lg shadow-primary/30 active:scale-95 transition-transform mb-4"

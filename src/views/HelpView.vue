@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { api } from '@/services/api'
 
 const router = useRouter()
 
@@ -28,34 +29,19 @@ const submitting = ref(false)
 
 const feedbackTypes = ['建议', '问题反馈', '功能需求', '其他']
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
-
 async function submitFeedback() {
   if (!feedbackContent.value.trim()) return
   submitting.value = true
-  
+
   try {
-    const userId = localStorage.getItem('user_id')
-    const res = await fetch(`${API_URL}/feedbacks`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-User-Id': userId || '',
-      },
-      body: JSON.stringify({
-        type: feedbackType.value,
-        content: feedbackContent.value,
-        contact: feedbackContact.value,
-      }),
+    await api.submitFeedback({
+      type: feedbackType.value,
+      content: feedbackContent.value,
+      contact: feedbackContact.value,
     })
-    
-    if (res.ok) {
-      submitted.value = true
-    } else {
-      alert('提交失败，请重试')
-    }
-  } catch (e) {
-    alert('网络错误，请重试')
+    submitted.value = true
+  } catch (e: any) {
+    alert(e?.message || '提交失败，请重试')
   } finally {
     submitting.value = false
   }

@@ -323,24 +323,33 @@ function levenshtein(a: string, b: string): number {
 
 // 模糊匹配：找到最接近的关键词
 function findClosestKeyword(text: string, keywords: string[]): { keyword: string; distance: number } | null {
+  const textLower = text.toLowerCase()
+  // 空文本或单字符文本不参与模糊匹配（单字符精确匹配已在 computeSimilarity 中处理），
+  // 否则几乎任何短词都会与单个汉字/字母形成编辑距离 1 的误匹配。
+  if (textLower.trim().length < 2) return null
+
   let closest = null
   let minDistance = Infinity
-  
+
   for (const keyword of keywords) {
     const kw = keyword.toLowerCase()
-    const textLower = text.toLowerCase()
-    
-    // 方法1：直接比较整个文本
-    const dist1 = levenshtein(textLower, kw)
+    // 单字关键词只做精确匹配，避免 1 个编辑距离内匹配到任意单字
+    if (kw.length < 2) continue
+
     const maxAllowed1 = kw.length <= 3 ? 1 : 2
-    if (dist1 < minDistance && dist1 <= maxAllowed1) {
-      minDistance = dist1
-      closest = keyword
+
+    // 方法1：直接比较整个文本（仅当文本长度与关键词长度接近时才有意义）
+    if (Math.abs(textLower.length - kw.length) <= maxAllowed1) {
+      const dist1 = levenshtein(textLower, kw)
+      if (dist1 < minDistance && dist1 <= maxAllowed1) {
+        minDistance = dist1
+        closest = keyword
+      }
     }
-    
+
     // 方法2：在文本中查找与关键词长度相近的子串
     const kwLen = kw.length
-    for (let len = kwLen - 1; len <= kwLen + 2; len++) {
+    for (let len = Math.max(1, kwLen - 1); len <= kwLen + 2 && len <= textLower.length; len++) {
       for (let i = 0; i <= textLower.length - len; i++) {
         const substring = textLower.substring(i, i + len)
         const dist2 = levenshtein(substring, kw)
@@ -352,27 +361,8 @@ function findClosestKeyword(text: string, keywords: string[]): { keyword: string
       }
     }
   }
-  
-  return closest ? { keyword: closest, distance: minDistance } : null
-}
 
-// 词频统计（TF）
-function tokenize(text: string): string[] {
-  const lower = text.toLowerCase()
-  const tokens: string[] = []
-  
-  // 中文：按字和词切分
-  for (let i = 0; i < lower.length; i++) {
-    tokens.push(lower[i])
-    if (i < lower.length - 1) {
-      tokens.push(lower.substring(i, i + 2))
-    }
-    if (i < lower.length - 2) {
-      tokens.push(lower.substring(i, i + 3))
-    }
-  }
-  
-  return tokens
+  return closest ? { keyword: closest, distance: minDistance } : null
 }
 
 // 计算文本与训练数据的相似度
@@ -391,7 +381,6 @@ function computeSimilarity(text: string, keywords: string[]): number {
       if (fuzzy) {
         // 模糊匹配权重较低（精确匹配的一半）
         score += (kw.length * kw.length) * 0.5
-        console.log(`[AI分类] 模糊匹配: "${lower}" → "${fuzzy.keyword}" (距离=${fuzzy.distance})`)
       }
     }
   }
@@ -441,6 +430,7 @@ export function classify(text: string): CategoryScore[] {
 
 // 获取最佳分类
 export function classifyTop(text: string): string {
+  if (!text || !text.trim()) return '其他'
   const scores = classify(text)
   if (scores[0].score === 0) return '其他'
   return scores[0].category

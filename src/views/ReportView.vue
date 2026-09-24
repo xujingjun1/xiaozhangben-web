@@ -4,10 +4,13 @@ import { useExpenseStore } from '@/stores/expense'
 import { useDesktop } from '@/composables/useDesktop'
 import { formatMoney, formatMoneyCompact, formatMoneyClean, getCategoryInfo, formatDate } from '@/utils/helpers'
 import CategoryChart from '@/components/CategoryChart.vue'
+import MonthlyShareCard from '@/components/MonthlyShareCard.vue'
 import dayjs from 'dayjs'
 
 const store = useExpenseStore()
 const { isDesktop } = useDesktop()
+
+const showShare = ref(false)
 
 onMounted(() => store.init())
 
@@ -85,10 +88,10 @@ const categoryList = computed(() => {
   return Object.entries(store.categoryTotals)
     .sort((a, b) => b[1] - a[1])
     .map(([name, amount]) => ({
+      ...getCategoryInfo(name),
       name,
       amount,
-      percent: total > 0 ? Math.round((amount / total) * 100) : 0,
-      ...getCategoryInfo(name)
+      percent: total > 0 ? Math.round((amount / total) * 100) : 0
     }))
 })
 </script>
@@ -109,6 +112,14 @@ const categoryList = computed(() => {
 
     <!-- Overview Card -->
     <div class="bg-gradient-to-br from-primary to-primary-dark rounded-3xl p-5 text-white shadow-lg shadow-primary/30 mb-6">
+      <div class="flex items-center justify-between mb-1">
+        <span></span>
+        <button @click="showShare = true"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 text-xs font-medium hover:bg-white/25 active:scale-95 transition">
+          <span class="material-icons-round text-sm">ios_share</span>
+          分享账单
+        </button>
+      </div>
       <div class="flex items-center gap-6 mb-4">
         <div class="flex-1">
           <p class="text-white/60 text-xs">总支出</p>
@@ -212,6 +223,9 @@ const categoryList = computed(() => {
         </div>
       </Transition>
     </Teleport>
+
+    <!-- Monthly Share Card -->
+    <MonthlyShareCard :visible="showShare" @close="showShare = false" />
 
     <div v-if="!Object.keys(store.categoryTotals).length && !sortedDaily.length" class="flex flex-col items-center py-12">
       <span class="material-icons-round text-5xl text-txt-hint/30">show_chart</span>

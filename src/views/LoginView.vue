@@ -2,10 +2,8 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '@/services/api'
-import { useDesktop } from '@/composables/useDesktop'
 
 const router = useRouter()
-const { isDesktop } = useDesktop()
 const mode = ref<'login' | 'register' | 'reset'>('login')
 
 const loginUsername = ref('')
@@ -57,10 +55,6 @@ async function installPWA() {
     canInstallPWA.value = false
   }
   deferredPrompt.value = null
-}
-
-function downloadAPK() {
-  window.location.href = '/app-latest.apk'
 }
 
 // === Auth ===

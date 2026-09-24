@@ -1,0 +1,35 @@
+import { chromium } from 'file:///C:/Users/许境钧/.workbuddy/binaries/node/workspace/node_modules/playwright-core/index.mjs'
+const SITE = 'https://xiaozhangben-ledger-88116.app.workbuddy.host'
+const browser = await chromium.launch({ executablePath: 'C:/Users/许境钧/.agent-browser/browsers/chrome-154.0.8037.57/chrome.exe' })
+const page = await (await browser.newContext({ viewport: { width: 1440, height: 900 } })).newPage()
+page.on('request', r => { if (r.url().includes('/api/')) console.log('→', r.method(), r.url().replace(SITE, '')) })
+page.on('response', r => { if (r.url().includes('/api/')) console.log('←', r.status(), r.url().replace(SITE, '')) })
+page.on('requestfailed', r => { if (r.url().includes('/api/')) console.log('✗', r.url(), r.failure()?.errorText) })
+page.on('pageerror', e => console.log('[pageerror]', e.message))
+
+// 登录
+await page.goto(SITE + '/#/login', { waitUntil: 'domcontentloaded', timeout: 25000 })
+await page.waitForTimeout(1800)
+await page.fill('input[placeholder*="昵称"]', 'qa_share_check')
+await page.fill('input[placeholder*="密码"]', 'share_check_2026')
+await page.click('button:has-text("登录")')
+await page.waitForTimeout(2500)
+console.log('登录后URL:', page.url())
+console.log('localStorage.user_id:', await page.evaluate(() => localStorage.getItem('user_id')))
+
+// 进入记一笔
+await page.evaluate(() => { location.hash = '#/add' })
+await page.waitForTimeout(2000)
+console.log('add页URL:', page.url())
+const amountEl = page.locator('input[inputmode="decimal"]')
+console.log('金额输入框数量:', await amountEl.count())
+await amountEl.first().click()
+await amountEl.first().fill('23.5')
+console.log('金额填入后 value:', await amountEl.first().inputValue())
+const descEl = page.locator('input[placeholder*="备注"], textarea').first()
+if (await descEl.count()) await descEl.fill('验收测试支出')
+console.log('点击记一笔按钮, 数量:', await page.locator('button:has-text("记一笔")').count())
+await page.locator('button:has-text("记一笔")').first().click()
+await page.waitForTimeout(4000)
+console.log('保存后URL:', page.url())
+await browser.close()

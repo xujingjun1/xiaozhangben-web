@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
-import { useDesktop } from '@/composables/useDesktop'
-
 const route = useRoute()
 const router = useRouter()
-const { isDesktop } = useDesktop()
 
 const navItems = [
   { path: '/', icon: 'home', label: '首页' },

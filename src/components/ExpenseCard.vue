@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { formatDateShort, formatMoney, getCategoryInfo } from '@/utils/helpers'
+import { formatMoney, getCategoryInfo } from '@/utils/helpers'
 import type { Expense } from '@/db'
 
 const props = defineProps<{ expense: Expense }>()
@@ -23,7 +23,7 @@ const info = getCategoryInfo(props.expense.category)
       <div class="flex items-center gap-1.5 mt-1">
         <span class="text-[10px] px-1.5 py-0.5 rounded font-medium"
           :style="{ backgroundColor: info.color + '12', color: info.color }">{{ expense.category }}</span>
-        <span v-for="tag in expense.tags.slice(0, 2)" :key="tag"
+        <span v-for="tag in (expense.tags || []).slice(0, 2)" :key="tag"
           class="text-[10px] px-1.5 py-0.5 rounded bg-surface text-txt-secondary">{{ tag }}</span>
       </div>
     </div>
