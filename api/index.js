@@ -312,10 +312,18 @@ async function getBaiduAccessToken(apiKey, secretKey) {
 
 // 百度 OCR 识别接口
 app.post('/api/ocr/baidu', async (req, res) => {
-  const { image, apiKey, secretKey, type = 'accurate' } = req.body
+  const { image, type = 'accurate' } = req.body
+  let { apiKey, secretKey } = req.body
   
-  if (!image || !apiKey || !secretKey) {
-    return res.status(400).json({ error: '缺少必要参数' })
+  // 支持从服务端环境变量回退
+  if (!apiKey) apiKey = process.env.BAIDU_OCR_API_KEY || ''
+  if (!secretKey) secretKey = process.env.BAIDU_OCR_SECRET_KEY || ''
+  
+  if (!image) {
+    return res.status(400).json({ error: '缺少图片数据' })
+  }
+  if (!apiKey || !secretKey) {
+    return res.status(400).json({ error: '未配置百度 OCR 密钥' })
   }
   
   try {
@@ -366,6 +374,17 @@ app.post('/api/ocr/verify', async (req, res) => {
     res.status(400).json({ error: e.message })
   }
 })
+
+
+// 百度 OCR 配置状态接口（从服务端环境变量读取）
+app.get('/api/ocr/config', (req, res) => {
+  const apiKey = process.env.BAIDU_OCR_API_KEY || '';
+  const secretKey = process.env.BAIDU_OCR_SECRET_KEY || '';
+  res.json({
+    configured: !!(apiKey && secretKey),
+    apiKey: apiKey ? apiKey.slice(0, 6) + '***' : '',
+  });
+});
 
 // ========== RATINGS ==========
 

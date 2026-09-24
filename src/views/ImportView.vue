@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '@/services/api'
 import { categories } from '@/utils/helpers'
@@ -251,6 +251,23 @@ const tempApiKey = ref('')
 const tempSecretKey = ref('')
 const ocrEngine = ref<'baidu' | 'local'>(localStorage.getItem('ocr_engine') as any || 'baidu')
 
+// 自动从服务端获取 OCR 密钥配置
+onMounted(async () => {
+  // 如果 localStorage 已有密钥，跳过
+  if (baiduApiKey.value && baiduSecretKey.value) return
+  try {
+    const res = await fetch(`${API_URL}/ocr/config`)
+    const data = await res.json()
+    if (data.configured) {
+      console.log('[OCR] 服务端已配置百度 OCR 密钥，使用服务端配置')
+      // 标记服务端已配置，前端不需要手动输入密钥
+      localStorage.setItem('ocr_server_configured', 'true')
+    }
+  } catch (e) {
+    console.log('[OCR] 无法获取服务端 OCR 配置:', e)
+  }
+})
+
 function setOcrEngine(engine: 'baidu' | 'local') {
   ocrEngine.value = engine
   localStorage.setItem('ocr_engine', engine)
@@ -299,7 +316,8 @@ async function runOCR(imageSrc: string) {
   expenses.value = []
 
   try {
-    if (ocrEngine.value === 'baidu' && baiduApiKey.value && baiduSecretKey.value) {
+    const serverConfigured = localStorage.getItem('ocr_server_configured') === 'true'
+    if (ocrEngine.value === 'baidu' && (baiduApiKey.value && baiduSecretKey.value || serverConfigured)) {
       // 使用百度 OCR
       console.log(`[导入-OCR] 使用百度 OCR 高精度版...`)
       ocrProgress.value = 10
@@ -312,8 +330,8 @@ async function runOCR(imageSrc: string) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           image: base64Data,
-          apiKey: baiduApiKey.value,
-          secretKey: baiduSecretKey.value,
+          apiKey: baiduApiKey.value || '',
+          secretKey: baiduSecretKey.value || '',
           type: 'accurate',
         }),
       })
