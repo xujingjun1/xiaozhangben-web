@@ -43,3 +43,5 @@ api/data/backups/
 deploy-pkg/
 qa-screenshots/
 .workbuddy/
+.git-rewrite/
+.last-git-backup.txt
