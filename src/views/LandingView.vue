@@ -75,7 +75,7 @@ const faqs = [
   <!-- ===== 顶部导航 ===== -->
   <nav class="ln" :class="{ scrolled }">
     <div class="lni">
-      <div class="ll"><span class="lli"><img src="/favicon.svg" alt="小账本图标" /></span>小账本</div>
+      <div class="ll"><span class="lli"><img src="/favicon.svg?v=2" alt="小账本图标" /></span>小账本</div>
       <button class="lcb" @click="scrollTo('download')">{{ isAndroid ? '下载 App' : '立即使用' }}</button>
     </div>
   </nav>
@@ -105,7 +105,7 @@ const faqs = [
         <div class="lph">
           <div class="lphn"></div>
           <div class="lphs">
-            <div class="lphh"><img src="/favicon.svg" alt="小账本图标" style="width:60px;height:60px;display:block;margin-bottom:4px;box-shadow:0 6px 16px rgba(40,30,120,.35)" /><div style="font-size:.85rem;font-weight:600">小账本</div></div>
+            <div class="lphh"><img src="/favicon.svg?v=2" alt="小账本图标" style="width:60px;height:60px;display:block;margin-bottom:4px;box-shadow:0 6px 16px rgba(40,30,120,.35)" /><div style="font-size:.85rem;font-weight:600">小账本</div></div>
             <div class="lpht"><div style="font-size:.65rem;color:#999">本月支出</div><div style="font-size:1.1rem;font-weight:800">¥2,580</div></div>
             <div class="lphc">
               <div class="lphr"><span>🍔</span><div><div class="lphn2">午餐</div><div class="lphd">今天 12:30</div></div><div class="lpha">-¥35</div></div>
@@ -239,7 +239,7 @@ const faqs = [
         <div class="lmock">
           <!-- 分享卡片 -->
           <div class="lshare">
-            <div class="lshare-brand"><img src="/favicon.svg" alt="" /> 小账本</div>
+            <div class="lshare-brand"><img src="/favicon.svg?v=2" alt="" /> 小账本</div>
             <div class="lshare-month">2026年9月</div>
             <div class="lshare-label">本月支出</div>
             <div class="lshare-amt">¥2,580</div>
@@ -324,7 +324,7 @@ const faqs = [
   <footer class="lft2">
     <div class="lft2i">
       <div class="lft2-brand">
-        <div class="ll"><span class="lli"><img src="/favicon.svg" alt="小账本图标" /></span>小账本</div>
+        <div class="ll"><span class="lli"><img src="/favicon.svg?v=2" alt="小账本图标" /></span>小账本</div>
         <p>记录生活的每一笔温暖。<br/>无广告、无会员的记账应用。</p>
       </div>
       <div class="lft2-col">

@@ -173,7 +173,7 @@ function switchMode(m: 'login' | 'register' | 'reset') {
     <!-- Logo -->
     <div class="mb-10 text-center">
       <div class="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-3xl flex items-center justify-center mx-auto mb-4">
-        <img src="/favicon.svg" alt="小账本图标" class="w-14 h-14" />
+        <img src="/favicon.svg?v=2" alt="小账本图标" class="w-14 h-14" />
       </div>
       <h1 class="text-3xl font-bold text-white">小账本</h1>
       <p class="text-white/60 text-sm mt-2">记录生活的每一笔温暖</p>
