@@ -76,12 +76,15 @@
     .logo-icon {
       width: 40px;
       height: 40px;
-      background: var(--gradient-1);
-      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
+    }
+
+    .logo-icon img {
+      width: 40px;
+      height: 40px;
+      display: block;
     }
 
     .nav-links {
@@ -336,8 +339,14 @@
     }
 
     .app-logo {
-      font-size: 2.5rem;
       margin-bottom: 10px;
+    }
+
+    .app-logo img {
+      width: 64px;
+      height: 64px;
+      display: block;
+      box-shadow: 0 6px 18px rgba(40, 30, 120, 0.35);
     }
 
     .app-title {
@@ -615,7 +624,8 @@
 .mini-phone-screen{width:100%;height:100%;overflow:hidden}
 .screen-home{background:linear-gradient(180deg,#6C63FF 0%,#764BA2 45%,#f5f5f5 45%);padding:42px 16px 16px}
 .screen-home .sh-header{text-align:center;color:#fff;margin-bottom:16px}
-.screen-home .sh-header .sh-icon{font-size:2rem;margin-bottom:4px}
+.screen-home .sh-header .sh-icon{margin-bottom:4px}
+.screen-home .sh-header .sh-icon img{width:36px;height:36px;display:block}
 .screen-home .sh-header .sh-title{font-size:.85rem;font-weight:600}
 .screen-home .sh-card{background:#fff;border-radius:16px;padding:14px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
 .screen-home .sh-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0f0}
@@ -1341,7 +1351,7 @@
   <nav class="nav" id="navbar">
     <div class="nav-content">
       <a href="#" class="logo">
-        <div class="logo-icon">💰</div>
+        <div class="logo-icon"><img src="/favicon.svg" alt="小账本图标" width="40" height="40" /></div>
         小账本
       </a>
       <ul class="nav-links" id="navLinks">
@@ -1390,7 +1400,7 @@
           <div class="phone-notch"></div>
           <div class="phone-screen">
             <div class="app-header">
-              <div class="app-logo">💰</div>
+              <div class="app-logo"><img src="/favicon.svg" alt="小账本图标" width="64" height="64" /></div>
               <div class="app-title">小账本</div>
             </div>
             <div class="app-card">
@@ -1538,7 +1548,7 @@
             <div class="mini-phone-screen">
               <div class="screen-home">
                 <div class="sh-header">
-                  <div class="sh-icon">💰</div>
+                  <div class="sh-icon"><img src="/favicon.svg" alt="小账本图标" width="36" height="36" /></div>
                   <div class="sh-title">小账本</div>
                 </div>
                 <div class="sh-total">
@@ -1739,7 +1749,7 @@
     <div class="footer-content">
       <div class="footer-brand">
         <div class="footer-logo">
-          <span>💰</span> 小账本
+          <img src="/favicon.svg" alt="小账本图标" width="26" height="26" /> 小账本
         </div>
         <p class="footer-desc">简洁高效的个人记账应用，让理财变得简单有趣。</p>
       </div>

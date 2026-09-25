@@ -75,7 +75,7 @@ const faqs = [
   <!-- ===== 顶部导航 ===== -->
   <nav class="ln" :class="{ scrolled }">
     <div class="lni">
-      <div class="ll"><span class="lli">$</span>小账本</div>
+      <div class="ll"><span class="lli"><img src="/favicon.svg" alt="小账本图标" /></span>小账本</div>
       <button class="lcb" @click="scrollTo('download')">{{ isAndroid ? '下载 App' : '立即使用' }}</button>
     </div>
   </nav>
@@ -105,7 +105,7 @@ const faqs = [
         <div class="lph">
           <div class="lphn"></div>
           <div class="lphs">
-            <div class="lphh"><div style="font-size:2rem;margin-bottom:4px">$</div><div style="font-size:.85rem;font-weight:600">小账本</div></div>
+            <div class="lphh"><img src="/favicon.svg" alt="小账本图标" style="width:60px;height:60px;display:block;margin-bottom:4px;box-shadow:0 6px 16px rgba(40,30,120,.35)" /><div style="font-size:.85rem;font-weight:600">小账本</div></div>
             <div class="lpht"><div style="font-size:.65rem;color:#999">本月支出</div><div style="font-size:1.1rem;font-weight:800">¥2,580</div></div>
             <div class="lphc">
               <div class="lphr"><span>🍔</span><div><div class="lphn2">午餐</div><div class="lphd">今天 12:30</div></div><div class="lpha">-¥35</div></div>
@@ -239,7 +239,7 @@ const faqs = [
         <div class="lmock">
           <!-- 分享卡片 -->
           <div class="lshare">
-            <div class="lshare-brand">$ 小账本</div>
+            <div class="lshare-brand"><img src="/favicon.svg" alt="" /> 小账本</div>
             <div class="lshare-month">2026年9月</div>
             <div class="lshare-label">本月支出</div>
             <div class="lshare-amt">¥2,580</div>
@@ -324,7 +324,7 @@ const faqs = [
   <footer class="lft2">
     <div class="lft2i">
       <div class="lft2-brand">
-        <div class="ll"><span class="lli">$</span>小账本</div>
+        <div class="ll"><span class="lli"><img src="/favicon.svg" alt="小账本图标" /></span>小账本</div>
         <p>记录生活的每一笔温暖。<br/>无广告、无会员的记账应用。</p>
       </div>
       <div class="lft2-col">
@@ -377,7 +377,8 @@ const faqs = [
 .ln.scrolled{padding:12px 28px;background:rgba(11,10,19,.72);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);border-bottom-color:var(--border)}
 .lni{max-width:1120px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
 .ll{font-size:1.25rem;font-weight:700;letter-spacing:.01em;display:flex;align-items:center;gap:10px}
-.lli{width:34px;height:34px;background:linear-gradient(135deg,var(--primary),var(--pink));border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;box-shadow:0 4px 14px rgba(108,99,255,.35)}
+.lli{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 4px 14px rgba(108,99,255,.35)}
+.lli img{width:100%;height:100%;display:block}
 .lcb{padding:9px 22px;background:linear-gradient(135deg,var(--primary),var(--pink));border:none;border-radius:22px;color:#fff;font-weight:600;cursor:pointer;font-size:.88rem;letter-spacing:.02em;transition:transform .25s var(--ease-out),box-shadow .25s}
 .lcb:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(108,99,255,.4)}
 
@@ -514,7 +515,8 @@ const faqs = [
 
 /* 分享卡片模型 */
 .lshare{width:210px;background:linear-gradient(165deg,#6C63FF,#8A5CF6 55%,#B4519E);border-radius:20px;padding:20px;color:#fff;box-shadow:0 24px 54px rgba(108,99,255,.3);transform:rotate(2deg)}
-.lshare-brand{font-size:.78rem;font-weight:700;opacity:.9}
+.lshare-brand{font-size:.78rem;font-weight:700;opacity:.9;display:flex;align-items:center;gap:4px}
+.lshare-brand img{width:14px;height:14px;display:block;border-radius:4px}
 .lshare-month{font-size:1.05rem;font-weight:800;margin:10px 0 2px}
 .lshare-label{font-size:.66rem;opacity:.65}
 .lshare-amt{font-size:1.7rem;font-weight:800;letter-spacing:-.01em;margin:2px 0 10px}
