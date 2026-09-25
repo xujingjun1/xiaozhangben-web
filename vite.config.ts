@@ -12,6 +12,15 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
+      workbox: {
+        // 关键：不预缓存 HTML 与图标
+        // 原因：默认配置会把 index.html 也 precache，此后 Service Worker 一直
+        // 拦截导航请求返回缓存的旧 HTML —— 部署再多次，用户拿到的仍是旧页面
+        // （表现为：换了 favicon / 发了新版本，标签页图标和内容都不更新）
+        globPatterns: ['**/*.{js,css,woff,woff2}'],
+        navigateFallback: null,
+        cleanupOutdatedCaches: true,
+      },
       manifest: {
         name: '小账本 - 温暖的生活记账',
         short_name: '小账本',
