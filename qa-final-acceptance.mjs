@@ -17,6 +17,7 @@ const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } })
 const page = await ctx.newPage()
 page.on('pageerror', e => errors.push('desktop: ' + e.message))
 page.on('console', m => { if (m.type() === 'error') errors.push('desktop-console: ' + m.text()) })
+page.on('response', r => { if (r.status() >= 400) errors.push(`desktop-http: ${r.status()} ${r.request().method()} ${r.url()}`) })
 
 async function api(path, method = 'GET', body = null, uid = null) {
   const headers = { 'Content-Type': 'application/json' }
