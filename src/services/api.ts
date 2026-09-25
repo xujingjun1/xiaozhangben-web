@@ -68,12 +68,16 @@ export const api = {
     request('/auth/register', { method: 'POST', body: JSON.stringify({ username, password }) }),
   login: (username: string, password: string) =>
     request('/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) }),
-  resetPassword: (username: string, newPassword: string, answers: { question: string; answer: string }[]) =>
+  resetPassword: (username: string, newPassword: string, answers?: { question: string; answer: string }[]) =>
     request('/auth/reset-password', { method: 'POST', body: JSON.stringify({ username, newPassword, answers }) }),
+  resetPasswordByCode: (username: string, newPassword: string, recoveryCode: string) =>
+    request('/auth/reset-password', { method: 'POST', body: JSON.stringify({ username, newPassword, recoveryCode }) }),
   getSecurityQuestions: (username: string) =>
     request(`/auth/security-questions?username=${encodeURIComponent(username)}`),
   setSecurityQuestions: (currentPassword: string, questions: { question: string; answer: string }[]) =>
     request('/auth/security-questions', { method: 'POST', body: JSON.stringify({ currentPassword, questions }) }),
+  getRecoveryCodeStatus: () => request('/auth/recovery-code'),
+  generateRecoveryCode: () => request('/auth/recovery-code', { method: 'POST' }),
 
   // Expenses
   getExpenses: () => request('/expenses'),

@@ -201,6 +201,20 @@ function normalizeAnswer(value) {
   return String(value || '').trim().toLowerCase().replace(/\s+/g, '')
 }
 
+// ---- 恢复码：忘记密码且未设密保时的兜底凭证 ----
+// 字符集剔除易混淆的 0/O/1/I/L，避免用户手抄错
+const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
+function genRecoveryCode() {
+  const bytes = crypto.randomBytes(12)
+  let raw = ''
+  for (let i = 0; i < 12; i++) raw += CODE_ALPHABET[bytes[i] % CODE_ALPHABET.length]
+  return `${raw.slice(0, 4)}-${raw.slice(4, 8)}-${raw.slice(8, 12)}`
+}
+// 用户输入容错：忽略大小写、空格、连字符
+function normalizeCode(value) {
+  return String(value || '').trim().toUpperCase().replace(/[\s-]/g, '')
+}
+
 // ========== 速率限制 (内存实现) ==========
 const rateBuckets = new Map()
 function rateLimit({ windowMs = 15 * 60 * 1000, max = 10, keyFn } = {}) {
@@ -291,8 +305,10 @@ app.get('/api/auth/security-questions', resetRateLimit, (req, res) => {
   const db = loadDB()
   const user = db.users.find(u => u.username === username)
   const questions = user?.security?.questions
+  // 未设置时返回空数组而非 404：该接口会被设置页和首页引导条常规调用，
+  // 用 404 表达"未设置"会让浏览器控制台刷屏，语义上也不算错误
   if (!Array.isArray(questions) || questions.length === 0) {
-    return res.status(404).json({ error: '该账号未设置密保问题' })
+    return res.json({ questions: [] })
   }
   res.json({ questions: questions.map(q => q.question) })
 })
@@ -328,17 +344,54 @@ app.post('/api/auth/security-questions', authMiddleware, resetRateLimit, (req, r
   res.json({ success: true })
 })
 
-// 通过密保问题重置密码
+// 生成/重置恢复码（需登录）。明文只在此次响应返回，服务端仅存 scrypt 哈希
+app.post('/api/auth/recovery-code', authMiddleware, resetRateLimit, (req, res) => {
+  const db = loadDB()
+  const user = db.users.find(u => u.id === req.userId)
+  if (!user) return res.status(401).json({ error: '用户不存在' })
+  const code = genRecoveryCode()
+  user.recovery = { codeHash: hashPassword(normalizeCode(code)), createdAt: new Date().toISOString() }
+  saveDB(db)
+  res.json({ success: true, code })
+})
+
+// 查询恢复码状态（需登录）。只回是否已有，不回明文
+app.get('/api/auth/recovery-code', authMiddleware, (req, res) => {
+  const db = loadDB()
+  const user = db.users.find(u => u.id === req.userId)
+  if (!user) return res.status(401).json({ error: '用户不存在' })
+  res.json({ hasCode: !!user.recovery?.codeHash, createdAt: user.recovery?.createdAt || null })
+})
+
+// 通过密保问题 或 恢复码 重置密码
 app.post('/api/auth/reset-password', resetRateLimit, (req, res) => {
-  const { username, newPassword, answers } = req.body
+  const { username, newPassword, answers, recoveryCode } = req.body
   if (!username || !newPassword) return res.status(400).json({ error: '请填写完整信息' })
   if (newPassword.length < 6) return res.status(400).json({ error: '密码至少6位' })
-  if (!Array.isArray(answers) || answers.length === 0) return res.status(400).json({ error: '请回答密保问题' })
   const db = loadDB()
   const user = db.users.find(u => u.username === username)
+  if (!user) return res.status(400).json({ error: '账号不存在' })
+
+  // ---- 分支一：恢复码重置（一次性，成功后自动换发新码）----
+  if (recoveryCode) {
+    if (!user.recovery?.codeHash) return res.status(400).json({ error: '该账号未生成恢复码' })
+    if (!verifyPassword(normalizeCode(recoveryCode), user.recovery.codeHash)) {
+      return res.status(400).json({ error: '恢复码不正确' })
+    }
+    user.password = hashPassword(newPassword)
+    const next = genRecoveryCode()
+    user.recovery = { codeHash: hashPassword(normalizeCode(next)), createdAt: new Date().toISOString() }
+    saveDB(db)
+    return res.json({ success: true, message: '密码重置成功', newRecoveryCode: next })
+  }
+
+  // ---- 分支二：密保问题重置 ----
+  if (!Array.isArray(answers) || answers.length === 0) {
+    return res.status(400).json({ error: '请回答密保问题，或使用恢复码重置' })
+  }
   const questions = user?.security?.questions
   if (!Array.isArray(questions) || questions.length === 0) {
-    return res.status(400).json({ error: '该账号未设置密保问题' })
+    return res.status(400).json({ error: '该账号未设置密保问题，请使用恢复码重置' })
   }
   if (answers.length !== questions.length) {
     return res.status(400).json({ error: '密保问题答案数量不正确' })

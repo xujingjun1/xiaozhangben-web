@@ -17,7 +17,10 @@ const resetConfirm = ref('')
 const resetSuccess = ref(false)
 const resetQuestions = ref<string[]>([])
 const resetAnswers = ref<string[]>([])
-const resetStep = ref<'username' | 'questions'>('username')
+const resetStep = ref<'username' | 'questions' | 'code'>('username')
+const resetCode = ref('')
+// 重置成功后自动换发的新恢复码
+const newRecoveryCode = ref('')
 const loading = ref(false)
 const errorMsg = ref('')
 
@@ -97,14 +100,22 @@ async function fetchSecurityQuestions() {
     const res: any = await api.getSecurityQuestions(username)
     const questions = Array.isArray(res?.questions) ? res.questions : []
     if (!questions.length) {
-      errorMsg.value = '该账号未设置密保问题，请先登录后在“我的-账号安全”中设置'
+      // 账号没设密保 —— 不再堵死，引导改用恢复码
+      errorMsg.value = '该账号未设置密保问题，可改用密码恢复码重置'
+      resetStep.value = 'code'
       return
     }
     resetQuestions.value = questions
     resetAnswers.value = questions.map(() => '')
     resetStep.value = 'questions'
   } catch (e: any) {
-    errorMsg.value = e?.message === 'Failed to fetch' ? '网络连接失败，请检查网络' : (e?.message || '获取密保问题失败')
+    // 接口以 404 表示「未设置」，此时同样落到恢复码流程
+    if (e?.message && /未设置密保问题/.test(e.message)) {
+      errorMsg.value = '该账号未设置密保问题，可改用密码恢复码重置'
+      resetStep.value = 'code'
+    } else {
+      errorMsg.value = e?.message === 'Failed to fetch' ? '网络连接失败，请检查网络' : (e?.message || '获取密保问题失败')
+    }
   } finally { loading.value = false }
 }
 
@@ -112,7 +123,26 @@ function backToResetUsername() {
   resetStep.value = 'username'
   resetQuestions.value = []
   resetAnswers.value = []
+  resetCode.value = ''
   errorMsg.value = ''
+}
+
+// 用恢复码重置密码（忘记密码且未设密保时的兜底路径）
+async function handleResetByCode() {
+  const username = resetUsername.value.trim()
+  if (!username) { errorMsg.value = '请输入昵称'; return }
+  if (!resetCode.value.trim()) { errorMsg.value = '请输入密码恢复码'; return }
+  if (!resetNewPassword.value || !resetConfirm.value) { errorMsg.value = '请填写新密码'; return }
+  if (resetNewPassword.value !== resetConfirm.value) { errorMsg.value = '两次输入的密码不一致'; return }
+  if (resetNewPassword.value.length < 6) { errorMsg.value = '密码至少6位'; return }
+  loading.value = true; errorMsg.value = ''
+  try {
+    const res: any = await api.resetPasswordByCode(username, resetNewPassword.value, resetCode.value.trim())
+    newRecoveryCode.value = res?.newRecoveryCode || ''
+    resetSuccess.value = true; errorMsg.value = ''
+  } catch (e: any) {
+    errorMsg.value = e?.message === 'Failed to fetch' ? '网络连接失败，请检查网络' : (e?.message || '重置失败，请重试')
+  } finally { loading.value = false }
 }
 
 async function handleResetPassword() {
@@ -134,6 +164,7 @@ function switchMode(m: 'login' | 'register' | 'reset') {
   mode.value = m; errorMsg.value = ''; resetSuccess.value = false
   resetStep.value = 'username'; resetQuestions.value = []; resetAnswers.value = []
   resetUsername.value = ''; resetNewPassword.value = ''; resetConfirm.value = ''
+  resetCode.value = ''; newRecoveryCode.value = ''
 }
 </script>
 
@@ -244,12 +275,20 @@ function switchMode(m: 'login' | 'register' | 'reset') {
             <span class="material-icons-round text-4xl text-green-500">check_circle</span>
           </div>
           <p class="text-lg font-semibold text-txt mb-2">密码重置成功！</p>
+          <!-- 用恢复码重置时，后端已换发新码，务必让用户保存 -->
+          <template v-if="newRecoveryCode">
+            <p class="text-xs text-txt-hint mb-2">旧的恢复码已失效，新的恢复码请立即保存：</p>
+            <div class="bg-surface rounded-2xl px-4 py-3 mb-3">
+              <p class="text-base font-bold tracking-[0.18em] text-txt select-all break-all font-mono">{{ newRecoveryCode }}</p>
+            </div>
+            <p class="text-xs text-error mb-4">此码不会再显示第二次，请先截图保存</p>
+          </template>
           <p class="text-sm text-txt-secondary mb-6">请使用新密码登录</p>
           <button @click="switchMode('login')" class="w-full py-4 rounded-2xl font-semibold text-white bg-gradient-to-r from-primary to-primary-light shadow-lg shadow-primary/30 active:scale-95 transition-all">返回登录</button>
         </div>
         <template v-else>
           <template v-if="resetStep === 'username'">
-            <p class="text-xs text-txt-hint text-center mb-4">输入昵称，回答密保问题后重置密码</p>
+            <p class="text-xs text-txt-hint text-center mb-4">输入昵称，通过密保问题或密码恢复码重置</p>
             <input v-model="resetUsername" placeholder="请输入昵称"
               class="w-full bg-surface rounded-2xl px-4 py-3.5 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/30 transition mb-4"
               @keyup.enter="fetchSecurityQuestions" />
@@ -260,7 +299,7 @@ function switchMode(m: 'login' | 'register' | 'reset') {
               {{ loading ? '查询中...' : '下一步：获取密保问题' }}
             </button>
           </template>
-          <template v-else>
+          <template v-else-if="resetStep === 'questions'">
             <p class="text-xs text-txt-hint text-center mb-4">请回答密保问题并设置新密码</p>
             <div v-for="(q, i) in resetQuestions" :key="q" class="mb-4">
               <label class="block text-xs text-txt-secondary mb-1.5">{{ q }}</label>
@@ -279,6 +318,28 @@ function switchMode(m: 'login' | 'register' | 'reset') {
               :class="(resetNewPassword && resetConfirm && resetAnswers.every(a => a.trim())) ? 'bg-gradient-to-r from-primary to-primary-light shadow-lg shadow-primary/30' : 'bg-gray-300 cursor-not-allowed'">
               {{ loading ? '重置中...' : '重置密码' }}
             </button>
+            <button @click="backToResetUsername" class="w-full mt-3 text-xs text-txt-hint hover:text-primary transition">返回上一步</button>
+          </template>
+
+          <!-- 恢复码分支：忘记密码且未设密保时的兜底 -->
+          <template v-else>
+            <p class="text-xs text-txt-hint text-center mb-4">该账号未设置密保问题，可用密码恢复码重置</p>
+            <input v-model="resetCode" placeholder="请输入恢复码，如 AB3D-EFGH-K7M2"
+              class="w-full bg-surface rounded-2xl px-4 py-3.5 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/30 transition mb-4 tracking-wider"
+              autocomplete="off" />
+            <input v-model="resetNewPassword" type="password" placeholder="请输入新密码（至少6位）"
+              class="w-full bg-surface rounded-2xl px-4 py-3.5 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/30 transition mb-4" />
+            <input v-model="resetConfirm" type="password" placeholder="请再次确认新密码"
+              class="w-full bg-surface rounded-2xl px-4 py-3.5 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/30 transition mb-4"
+              @keyup.enter="handleResetByCode" />
+            <p v-if="errorMsg" class="text-error text-xs text-center mb-3">{{ errorMsg }}</p>
+            <button @click="handleResetByCode"
+              :disabled="!resetCode.trim() || !resetNewPassword || !resetConfirm || loading"
+              class="w-full py-4 rounded-2xl font-semibold text-white transition-all active:scale-95"
+              :class="(resetCode.trim() && resetNewPassword && resetConfirm) ? 'bg-gradient-to-r from-primary to-primary-light shadow-lg shadow-primary/30' : 'bg-gray-300 cursor-not-allowed'">
+              {{ loading ? '重置中...' : '用恢复码重置密码' }}
+            </button>
+            <p class="text-xs text-txt-hint text-center mt-3">恢复码在「我的 - 账号安全」中生成</p>
             <button @click="backToResetUsername" class="w-full mt-3 text-xs text-txt-hint hover:text-primary transition">返回上一步</button>
           </template>
         </template>

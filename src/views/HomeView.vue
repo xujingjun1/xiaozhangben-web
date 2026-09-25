@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useExpenseStore } from '@/stores/expense'
 import { useDesktop } from '@/composables/useDesktop'
+import { useSecuritySettings } from '@/composables/useSecuritySettings'
 import { getWeekdayName, getGreeting, formatMoney } from '@/utils/helpers'
 import DailySummary from '@/components/DailySummary.vue'
 import ExpenseCard from '@/components/ExpenseCard.vue'
@@ -12,7 +13,40 @@ const store = useExpenseStore()
 const router = useRouter()
 const { isDesktop } = useDesktop()
 
-onMounted(() => store.init())
+// === 账号安全引导：未设密保或恢复码时提示，关闭后当天不再出现 ===
+const {
+  securityEnabled, recoveryHasCode,
+  loadSecurityQuestions, loadRecoveryStatus,
+} = useSecuritySettings()
+const securityTipChecked = ref(false)
+const securityTipDismissed = ref(false)
+
+function todayKey() { return new Date().toDateString() }
+
+onMounted(async () => {
+  await store.init()
+  securityTipDismissed.value = localStorage.getItem('security_tip_dismissed') === todayKey()
+  try {
+    await Promise.all([loadSecurityQuestions(), loadRecoveryStatus()])
+  } finally {
+    securityTipChecked.value = true
+  }
+})
+
+const showSecurityTip = computed(
+  () => securityTipChecked.value && !securityTipDismissed.value
+    && (!securityEnabled.value || !recoveryHasCode.value)
+)
+
+function dismissSecurityTip() {
+  securityTipDismissed.value = true
+  localStorage.setItem('security_tip_dismissed', todayKey())
+}
+
+function gotoSsecuritySettings() {
+  dismissSecurityTip()
+  router.push('/settings')
+}
 
 const quotes = [
   { text: '省钱不是不花钱，而是把钱花在值得的地方。', source: '生活智慧' },
@@ -48,6 +82,22 @@ const todayQuote = quotes[new Date().getDate() % quotes.length]
           <span class="text-txt-hint ml-1">—— {{ todayQuote.source }}</span>
         </p>
       </div>
+    </div>
+
+    <!-- 账号安全引导 -->
+    <div v-if="showSecurityTip" class="rounded-2xl bg-primary/5 border border-primary/15 p-4 mb-4 flex items-center gap-3">
+      <span class="material-icons-round text-primary">shield</span>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-semibold text-txt">建议设置密保问题和恢复码</p>
+        <p class="text-xs text-txt-secondary">忘记密码时可用来自助找回，未设置将无法找回账号</p>
+      </div>
+      <button @click="gotoSsecuritySettings"
+        class="shrink-0 px-3 py-1.5 rounded-xl text-xs font-medium text-white bg-primary active:scale-95 transition">
+        去设置
+      </button>
+      <button @click="dismissSecurityTip" class="shrink-0 w-6 h-6 flex items-center justify-center text-txt-hint hover:text-txt transition">
+        <span class="material-icons-round text-lg">close</span>
+      </button>
     </div>
 
     <!-- 预算预警横幅 -->

@@ -41,6 +41,8 @@ const {
   securityEnabled, securityEditing, securitySaving, securityMsg, securityMsgOk,
   securityCurrentPassword, securityQuestions, securityQuestionOptions,
   loadSecurityQuestions, startEditSecurity, cancelEditSecurity, saveSecurityQuestions,
+  recoveryHasCode, recoveryCode, recoveryGenerating, recoveryMsg, recoveryMsgOk,
+  loadRecoveryStatus, generateRecovery, clearRecoveryCode, copyRecoveryCode,
 } = useSecuritySettings()
 
 onMounted(async () => {
@@ -53,6 +55,7 @@ onMounted(async () => {
   initReminder()
   await loadProfile()
   await loadSecurityQuestions()
+  await loadRecoveryStatus()
 })
 
 function toggleDarkMode() {
@@ -260,6 +263,46 @@ function logout() {
             <p v-else class="px-4 pb-3 text-xs text-txt-hint">建议设置 2 个密保问题，忘记密码时用来验证身份。</p>
             <p v-if="securityMsg" class="px-4 pb-3 text-xs" :class="securityMsgOk ? 'text-green-500' : 'text-error'">{{ securityMsg }}</p>
           </template>
+        </div>
+
+        <!-- 账号安全：恢复码 -->
+        <div class="bg-white rounded-2xl mb-6">
+          <div class="px-4 py-4">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-surface flex items-center justify-center">
+                <span class="material-icons-round text-primary text-lg">key</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-txt">密码恢复码</p>
+                <p class="text-xs text-txt-hint">{{ recoveryHasCode ? '已生成，可用于重置密码' : '未生成，忘记密码将无法找回' }}</p>
+              </div>
+              <button @click="generateRecovery" :disabled="recoveryGenerating"
+                class="text-xs text-primary font-medium px-2 py-1 hover:bg-surface rounded transition disabled:opacity-50">
+                {{ recoveryGenerating ? '生成中...' : (recoveryHasCode ? '重新生成' : '生成') }}
+              </button>
+            </div>
+          </div>
+
+          <!-- 明文仅在本次生成后展示 -->
+          <template v-if="recoveryCode">
+            <div class="mx-4 h-px bg-surface"></div>
+            <div class="px-4 py-3">
+              <p class="text-xs text-txt-hint mb-2">请立即截图或抄写保存，此码只显示这一次，关闭后无法再次查看。</p>
+              <div class="bg-surface rounded-xl px-3 py-3 text-center mb-2">
+                <p class="text-lg font-bold tracking-[0.2em] text-txt select-all break-all font-mono">{{ recoveryCode }}</p>
+              </div>
+              <div class="flex gap-2">
+                <button @click="copyRecoveryCode"
+                  class="flex-1 py-2.5 rounded-xl text-xs font-medium bg-surface text-txt-secondary">复制</button>
+                <button @click="clearRecoveryCode"
+                  class="flex-1 py-2.5 rounded-xl text-xs font-medium text-white bg-primary transition active:scale-95">我已保存</button>
+              </div>
+            </div>
+          </template>
+          <template v-else>
+            <p class="px-4 pb-3 text-xs text-txt-hint">忘记密码又没设密保时，可用恢复码重置。使用后立即失效并自动换发新码。</p>
+          </template>
+          <p v-if="recoveryMsg" class="px-4 pb-3 text-xs" :class="recoveryMsgOk ? 'text-green-500' : 'text-error'">{{ recoveryMsg }}</p>
         </div>
 
         <!-- Dark Mode -->

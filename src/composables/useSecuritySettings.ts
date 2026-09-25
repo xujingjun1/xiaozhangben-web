@@ -22,6 +22,13 @@ export function useSecuritySettings() {
     { question: securityQuestionOptions[1], answer: '' },
   ])
 
+  // ---- 恢复码 ----
+  const recoveryHasCode = ref(false)
+  const recoveryCode = ref('')          // 明文，仅生成成功后短暂展示
+  const recoveryGenerating = ref(false)
+  const recoveryMsg = ref('')
+  const recoveryMsgOk = ref(false)
+
   function getUsername(): string {
     try {
       return JSON.parse(localStorage.getItem('user_info') || '{}').username || ''
@@ -103,9 +110,56 @@ export function useSecuritySettings() {
     }
   }
 
+  // 查询当前账号是否已生成恢复码（不返回明文）
+  async function loadRecoveryStatus() {
+    try {
+      const res: any = await api.getRecoveryCodeStatus()
+      recoveryHasCode.value = !!res?.hasCode
+    } catch {
+      recoveryHasCode.value = false
+    }
+  }
+
+  // 生成/重新生成恢复码。明文只出现一次，不做持久化
+  async function generateRecovery() {
+    recoveryGenerating.value = true
+    recoveryMsg.value = ''
+    try {
+      const res: any = await api.generateRecoveryCode()
+      recoveryCode.value = res?.code || ''
+      recoveryHasCode.value = true
+      recoveryMsgOk.value = true
+      recoveryMsg.value = '恢复码已生成，请立即保存'
+    } catch (e: any) {
+      recoveryMsgOk.value = false
+      recoveryMsg.value = e?.message || '生成失败，请重试'
+    } finally {
+      recoveryGenerating.value = false
+    }
+  }
+
+  function clearRecoveryCode() {
+    recoveryCode.value = ''
+    recoveryMsg.value = ''
+  }
+
+  async function copyRecoveryCode() {
+    if (!recoveryCode.value) return
+    try {
+      await navigator.clipboard.writeText(recoveryCode.value)
+      recoveryMsgOk.value = true
+      recoveryMsg.value = '已复制到剪贴板'
+    } catch {
+      recoveryMsgOk.value = false
+      recoveryMsg.value = '复制失败，请手动抄写保存'
+    }
+  }
+
   return {
     securityEnabled, securityEditing, securitySaving, securityMsg, securityMsgOk,
     securityCurrentPassword, securityQuestions, securityQuestionOptions,
     loadSecurityQuestions, startEditSecurity, cancelEditSecurity, saveSecurityQuestions,
+    recoveryHasCode, recoveryCode, recoveryGenerating, recoveryMsg, recoveryMsgOk,
+    loadRecoveryStatus, generateRecovery, clearRecoveryCode, copyRecoveryCode,
   }
 }
