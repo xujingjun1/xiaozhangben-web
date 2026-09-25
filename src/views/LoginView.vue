@@ -15,6 +15,9 @@ const resetUsername = ref('')
 const resetNewPassword = ref('')
 const resetConfirm = ref('')
 const resetSuccess = ref(false)
+const resetQuestions = ref<string[]>([])
+const resetAnswers = ref<string[]>([])
+const resetStep = ref<'username' | 'questions'>('username')
 const loading = ref(false)
 const errorMsg = ref('')
 
@@ -86,21 +89,51 @@ async function handleRegister() {
   } finally { loading.value = false }
 }
 
+async function fetchSecurityQuestions() {
+  const username = resetUsername.value.trim()
+  if (!username) { errorMsg.value = '请输入昵称'; return }
+  loading.value = true; errorMsg.value = ''
+  try {
+    const res: any = await api.getSecurityQuestions(username)
+    const questions = Array.isArray(res?.questions) ? res.questions : []
+    if (!questions.length) {
+      errorMsg.value = '该账号未设置密保问题，请先登录后在“我的-账号安全”中设置'
+      return
+    }
+    resetQuestions.value = questions
+    resetAnswers.value = questions.map(() => '')
+    resetStep.value = 'questions'
+  } catch (e: any) {
+    errorMsg.value = e?.message === 'Failed to fetch' ? '网络连接失败，请检查网络' : (e?.message || '获取密保问题失败')
+  } finally { loading.value = false }
+}
+
+function backToResetUsername() {
+  resetStep.value = 'username'
+  resetQuestions.value = []
+  resetAnswers.value = []
+  errorMsg.value = ''
+}
+
 async function handleResetPassword() {
-  if (!resetUsername.value || !resetNewPassword.value || !resetConfirm.value) return
+  if (!resetNewPassword.value || !resetConfirm.value) return
+  if (resetAnswers.value.some(a => !a.trim())) { errorMsg.value = '请填写所有密保答案'; return }
   if (resetNewPassword.value !== resetConfirm.value) { errorMsg.value = '两次输入的密码不一致'; return }
   if (resetNewPassword.value.length < 6) { errorMsg.value = '密码至少6位'; return }
   loading.value = true; errorMsg.value = ''
   try {
-    await api.resetPassword(resetUsername.value, resetNewPassword.value)
+    const answers = resetQuestions.value.map((q, i) => ({ question: q, answer: resetAnswers.value[i] }))
+    await api.resetPassword(resetUsername.value.trim(), resetNewPassword.value, answers)
     resetSuccess.value = true; errorMsg.value = ''
   } catch (e: any) {
-    errorMsg.value = e.message === 'Failed to fetch' ? '网络连接失败，请检查网络' : e.message
+    errorMsg.value = e?.message === 'Failed to fetch' ? '网络连接失败，请检查网络' : (e?.message || '重置失败，请重试')
   } finally { loading.value = false }
 }
 
 function switchMode(m: 'login' | 'register' | 'reset') {
   mode.value = m; errorMsg.value = ''; resetSuccess.value = false
+  resetStep.value = 'username'; resetQuestions.value = []; resetAnswers.value = []
+  resetUsername.value = ''; resetNewPassword.value = ''; resetConfirm.value = ''
 }
 </script>
 
@@ -215,19 +248,39 @@ function switchMode(m: 'login' | 'register' | 'reset') {
           <button @click="switchMode('login')" class="w-full py-4 rounded-2xl font-semibold text-white bg-gradient-to-r from-primary to-primary-light shadow-lg shadow-primary/30 active:scale-95 transition-all">返回登录</button>
         </div>
         <template v-else>
-          <input v-model="resetUsername" placeholder="请输入昵称"
-            class="w-full bg-surface rounded-2xl px-4 py-3.5 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/30 transition mb-4" />
-          <input v-model="resetNewPassword" type="password" placeholder="请输入新密码（至少6位）"
-            class="w-full bg-surface rounded-2xl px-4 py-3.5 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/30 transition mb-4" />
-          <input v-model="resetConfirm" type="password" placeholder="请再次确认新密码"
-            class="w-full bg-surface rounded-2xl px-4 py-3.5 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/30 transition mb-4"
-            @keyup.enter="handleResetPassword" />
-          <p v-if="errorMsg" class="text-error text-xs text-center mb-3">{{ errorMsg }}</p>
-          <button @click="handleResetPassword" :disabled="!resetUsername || !resetNewPassword || !resetConfirm || loading"
-            class="w-full py-4 rounded-2xl font-semibold text-white transition-all active:scale-95"
-            :class="(resetUsername && resetNewPassword && resetConfirm) ? 'bg-gradient-to-r from-primary to-primary-light shadow-lg shadow-primary/30' : 'bg-gray-300 cursor-not-allowed'">
-            {{ loading ? '重置中...' : '重置密码' }}
-          </button>
+          <template v-if="resetStep === 'username'">
+            <p class="text-xs text-txt-hint text-center mb-4">输入昵称，回答密保问题后重置密码</p>
+            <input v-model="resetUsername" placeholder="请输入昵称"
+              class="w-full bg-surface rounded-2xl px-4 py-3.5 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/30 transition mb-4"
+              @keyup.enter="fetchSecurityQuestions" />
+            <p v-if="errorMsg" class="text-error text-xs text-center mb-3">{{ errorMsg }}</p>
+            <button @click="fetchSecurityQuestions" :disabled="!resetUsername || loading"
+              class="w-full py-4 rounded-2xl font-semibold text-white transition-all active:scale-95"
+              :class="resetUsername ? 'bg-gradient-to-r from-primary to-primary-light shadow-lg shadow-primary/30' : 'bg-gray-300 cursor-not-allowed'">
+              {{ loading ? '查询中...' : '下一步：获取密保问题' }}
+            </button>
+          </template>
+          <template v-else>
+            <p class="text-xs text-txt-hint text-center mb-4">请回答密保问题并设置新密码</p>
+            <div v-for="(q, i) in resetQuestions" :key="q" class="mb-4">
+              <label class="block text-xs text-txt-secondary mb-1.5">{{ q }}</label>
+              <input v-model="resetAnswers[i]" placeholder="请输入答案"
+                class="w-full bg-surface rounded-2xl px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/30 transition" />
+            </div>
+            <input v-model="resetNewPassword" type="password" placeholder="请输入新密码（至少6位）"
+              class="w-full bg-surface rounded-2xl px-4 py-3.5 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/30 transition mb-4" />
+            <input v-model="resetConfirm" type="password" placeholder="请再次确认新密码"
+              class="w-full bg-surface rounded-2xl px-4 py-3.5 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/30 transition mb-4"
+              @keyup.enter="handleResetPassword" />
+            <p v-if="errorMsg" class="text-error text-xs text-center mb-3">{{ errorMsg }}</p>
+            <button @click="handleResetPassword"
+              :disabled="!resetNewPassword || !resetConfirm || !resetAnswers.every(a => a.trim()) || loading"
+              class="w-full py-4 rounded-2xl font-semibold text-white transition-all active:scale-95"
+              :class="(resetNewPassword && resetConfirm && resetAnswers.every(a => a.trim())) ? 'bg-gradient-to-r from-primary to-primary-light shadow-lg shadow-primary/30' : 'bg-gray-300 cursor-not-allowed'">
+              {{ loading ? '重置中...' : '重置密码' }}
+            </button>
+            <button @click="backToResetUsername" class="w-full mt-3 text-xs text-txt-hint hover:text-primary transition">返回上一步</button>
+          </template>
         </template>
       </div>
       <p class="text-white/60 text-sm text-center mt-5">

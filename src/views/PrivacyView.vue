@@ -46,7 +46,7 @@ function goBack() {
           我们采取行业标准的安全措施保护您的数据：
         </p>
         <ul class="text-sm text-txt-secondary mb-4 space-y-2 list-disc list-inside">
-          <li>数据加密存储</li>
+          <li>账号密码加密存储</li>
           <li>安全的网络传输</li>
           <li>严格的访问控制</li>
         </ul>

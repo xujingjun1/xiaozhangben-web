@@ -197,6 +197,10 @@ function verifyPassword(password, stored) {
   return a.length === b.length && crypto.timingSafeEqual(a, b)
 }
 
+function normalizeAnswer(value) {
+  return String(value || '').trim().toLowerCase().replace(/\s+/g, '')
+}
+
 // ========== 速率限制 (内存实现) ==========
 const rateBuckets = new Map()
 function rateLimit({ windowMs = 15 * 60 * 1000, max = 10, keyFn } = {}) {
@@ -225,6 +229,8 @@ setInterval(() => {
 
 // 登录/注册/重置密码共用限流: 15 分钟内每 IP 最多 15 次
 const authRateLimit = rateLimit({ windowMs: 15 * 60 * 1000, max: 15 })
+// 密保相关接口：按 IP + 账号限流，防止暴力猜答案
+const resetRateLimit = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, keyFn: (req) => `${req.userId || req.socket?.remoteAddress || 'unknown'}:${req.body?.username || req.query?.username || ''}` })
 // OCR 接口限流：登录后按用户限流，防止消耗服务端配置的百度 OCR 额度
 const ocrRateLimit = rateLimit({ windowMs: 15 * 60 * 1000, max: 30, keyFn: (req) => req.userId || req.socket?.remoteAddress || 'unknown' })
 
@@ -249,11 +255,6 @@ function authMiddleware(req, res, next) {
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
-})
-
-// 临时调试端点：回显请求头，用于确认网关透传行为（排查完成后移除）
-app.get('/api/_echo', (req, res) => {
-  res.json({ headers: req.headers })
 })
 
 // ========== AUTH ==========
@@ -283,13 +284,75 @@ app.post('/api/auth/login', authRateLimit, (req, res) => {
   res.json({ success: true, user: { id: user.id, username: user.username, nickname: user.nickname } })
 })
 
-app.post('/api/auth/reset-password', authRateLimit, (req, res) => {
-  const { username, newPassword } = req.body
-  if (!username || !newPassword) return res.status(400).json({ error: '请填写完整信息' })
-  if (newPassword.length < 6) return res.status(400).json({ error: '密码至少6位' })
+// 获取密保问题（公开，忘记密码流程使用）
+app.get('/api/auth/security-questions', resetRateLimit, (req, res) => {
+  const username = String(req.query.username || '').trim()
+  if (!username) return res.status(400).json({ error: '请输入昵称' })
   const db = loadDB()
   const user = db.users.find(u => u.username === username)
-  if (!user) return res.status(400).json({ error: '账号不存在' })
+  const questions = user?.security?.questions
+  if (!Array.isArray(questions) || questions.length === 0) {
+    return res.status(404).json({ error: '该账号未设置密保问题' })
+  }
+  res.json({ questions: questions.map(q => q.question) })
+})
+
+// 设置/更新密保问题（需登录 + 当前密码）
+app.post('/api/auth/security-questions', authMiddleware, resetRateLimit, (req, res) => {
+  const { currentPassword, questions } = req.body
+  if (!currentPassword) return res.status(400).json({ error: '请输入当前密码' })
+  if (!Array.isArray(questions) || questions.length < 2 || questions.length > 3) {
+    return res.status(400).json({ error: '请设置 2-3 个密保问题' })
+  }
+  const normalized = questions.map(q => ({
+    question: String(q?.question || '').trim(),
+    answer: normalizeAnswer(q?.answer),
+  }))
+  if (normalized.some(q => q.question.length < 2 || q.answer.length < 1)) {
+    return res.status(400).json({ error: '密保问题和答案不能为空' })
+  }
+  const seen = new Set()
+  for (const q of normalized) {
+    if (seen.has(q.question)) return res.status(400).json({ error: '密保问题不能重复' })
+    seen.add(q.question)
+  }
+  const db = loadDB()
+  const user = db.users.find(u => u.id === req.userId)
+  if (!user) return res.status(401).json({ error: '用户不存在' })
+  if (!verifyPassword(currentPassword, user.password)) return res.status(400).json({ error: '当前密码错误' })
+  user.security = {
+    questions: normalized.map(q => ({ question: q.question, answerHash: hashPassword(q.answer) })),
+    updatedAt: new Date().toISOString(),
+  }
+  saveDB(db)
+  res.json({ success: true })
+})
+
+// 通过密保问题重置密码
+app.post('/api/auth/reset-password', resetRateLimit, (req, res) => {
+  const { username, newPassword, answers } = req.body
+  if (!username || !newPassword) return res.status(400).json({ error: '请填写完整信息' })
+  if (newPassword.length < 6) return res.status(400).json({ error: '密码至少6位' })
+  if (!Array.isArray(answers) || answers.length === 0) return res.status(400).json({ error: '请回答密保问题' })
+  const db = loadDB()
+  const user = db.users.find(u => u.username === username)
+  const questions = user?.security?.questions
+  if (!Array.isArray(questions) || questions.length === 0) {
+    return res.status(400).json({ error: '该账号未设置密保问题' })
+  }
+  if (answers.length !== questions.length) {
+    return res.status(400).json({ error: '密保问题答案数量不正确' })
+  }
+  const answerMap = new Map(answers.map(a => [String(a?.question || '').trim(), String(a?.answer || '')]))
+  let allOk = true
+  for (const q of questions) {
+    const provided = answerMap.get(q.question)
+    if (provided === undefined || !verifyPassword(normalizeAnswer(provided), q.answerHash)) {
+      allOk = false
+      break
+    }
+  }
+  if (!allOk) return res.status(400).json({ error: '密保答案不正确' })
   user.password = hashPassword(newPassword)
   saveDB(db)
   res.json({ success: true, message: '密码重置成功' })
@@ -507,6 +570,11 @@ app.post('/api/ocr/verify', authMiddleware, ocrRateLimit, async (req, res) => {
   } catch (e) {
     res.status(400).json({ error: e.message })
   }
+})
+
+// ========== API 404 ==========
+app.use('/api', (req, res) => {
+  res.status(404).json({ error: '接口不存在' })
 })
 
 // ========== SERVE FRONTEND ==========

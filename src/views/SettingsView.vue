@@ -7,6 +7,7 @@ import { useProfileSettings } from '@/composables/useProfileSettings'
 import { useReminderSettings } from '@/composables/useReminderSettings'
 import { useDataManagement } from '@/composables/useDataManagement'
 import { useServerSettings } from '@/composables/useServerSettings'
+import { useSecuritySettings } from '@/composables/useSecuritySettings'
 
 const router = useRouter()
 const store = useExpenseStore()
@@ -36,6 +37,12 @@ const {
   startEditServerUrl, cancelEditServerUrl, saveServerUrl, testServerConnection,
 } = useServerSettings()
 
+const {
+  securityEnabled, securityEditing, securitySaving, securityMsg, securityMsgOk,
+  securityCurrentPassword, securityQuestions, securityQuestionOptions,
+  loadSecurityQuestions, startEditSecurity, cancelEditSecurity, saveSecurityQuestions,
+} = useSecuritySettings()
+
 onMounted(async () => {
   await store.init()
   const savedDarkMode = localStorage.getItem('dark_mode')
@@ -45,6 +52,7 @@ onMounted(async () => {
   }
   initReminder()
   await loadProfile()
+  await loadSecurityQuestions()
 })
 
 function toggleDarkMode() {
@@ -202,6 +210,56 @@ function logout() {
           <div class="px-4 py-3">
             <p class="text-[11px] text-txt-hint leading-relaxed">电脑和手机都填同一个服务器地址，登录同一账号，数据就会自动同步。可部署到云服务器或局域网内的电脑上。</p>
           </div>
+        </div>
+
+        <!-- 账号安全：密保问题 -->
+        <h2 class="text-base font-semibold text-txt mb-3">账号安全</h2>
+        <div class="bg-white rounded-2xl mb-6">
+          <div class="px-4 py-4">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-surface flex items-center justify-center">
+                <span class="material-icons-round text-primary text-lg">shield</span>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-txt">密保问题</p>
+                <p class="text-xs text-txt-hint">{{ securityEnabled ? '已设置，可用于找回密码' : '未设置时忘记密码将无法找回' }}</p>
+              </div>
+              <button v-if="!securityEditing" @click="startEditSecurity" class="text-xs text-primary font-medium px-2 py-1 hover:bg-surface rounded transition">
+                {{ securityEnabled ? '修改' : '设置' }}
+              </button>
+            </div>
+          </div>
+          <template v-if="securityEditing">
+            <div class="mx-4 h-px bg-surface"></div>
+            <div class="px-4 py-3 space-y-3">
+              <div v-for="(q, i) in securityQuestions" :key="i">
+                <select v-model="q.question"
+                  class="w-full bg-surface rounded-xl px-3 py-2.5 text-sm outline-none mb-2">
+                  <option v-for="opt in securityQuestionOptions" :key="opt" :value="opt">{{ opt }}</option>
+                </select>
+                <input v-model="q.answer" placeholder="请输入答案"
+                  class="w-full bg-surface rounded-xl px-3 py-2.5 text-sm outline-none" />
+              </div>
+              <input v-model="securityCurrentPassword" type="password" placeholder="请输入当前密码以确认"
+                class="w-full bg-surface rounded-xl px-3 py-2.5 text-sm outline-none" />
+              <p v-if="securityMsg" class="text-xs" :class="securityMsgOk ? 'text-green-500' : 'text-error'">{{ securityMsg }}</p>
+              <div class="flex gap-2">
+                <button @click="cancelEditSecurity" class="flex-1 py-2.5 rounded-xl text-xs font-medium bg-surface text-txt-secondary">取消</button>
+                <button @click="saveSecurityQuestions" :disabled="securitySaving"
+                  class="flex-1 py-2.5 rounded-xl text-xs font-medium text-white transition active:scale-95"
+                  :class="securitySaving ? 'bg-gray-300' : 'bg-primary'">
+                  {{ securitySaving ? '保存中...' : '保存密保问题' }}
+                </button>
+              </div>
+            </div>
+          </template>
+          <template v-else>
+            <div v-if="securityEnabled" class="px-4 pb-3 space-y-1">
+              <p v-for="q in securityQuestions" :key="q.question" class="text-xs text-txt-secondary truncate">· {{ q.question }}</p>
+            </div>
+            <p v-else class="px-4 pb-3 text-xs text-txt-hint">建议设置 2 个密保问题，忘记密码时用来验证身份。</p>
+            <p v-if="securityMsg" class="px-4 pb-3 text-xs" :class="securityMsgOk ? 'text-green-500' : 'text-error'">{{ securityMsg }}</p>
+          </template>
         </div>
 
         <!-- Dark Mode -->

@@ -169,16 +169,43 @@ let BUD_ID = ''
   record('边界-非管理员访问全部反馈应403', r4.status === 403, `status=${r4.status} msg=${r4.data.error}`)
 }
 
-// ---------- 11. 重置密码 ----------
+// ---------- 10.5 密保问题 ----------
+const SECURITY_QUESTIONS = [
+  { question: '你的小学名称是什么？', answer: '测试小学' },
+  { question: '你最喜欢的食物是什么？', answer: '面条' },
+]
 {
-  const r = await req('/auth/reset-password', { method: 'POST', body: { username: TEST_USER, newPassword: 'newpass123' } })
-  record('重置密码', r.status === 200 && r.data.success, `status=${r.status}`)
+  const r = await req('/auth/security-questions', { method: 'POST', headers: AUTH, body: { currentPassword: 'test123456', questions: SECURITY_QUESTIONS } })
+  record('设置密保问题', r.status === 200 && r.data.success, `status=${r.status} msg=${r.data.error || ''}`)
+
+  const r2 = await req('/auth/security-questions?username=' + encodeURIComponent(TEST_USER))
+  record('获取密保问题', r2.status === 200 && Array.isArray(r2.data.questions) && r2.data.questions.length === SECURITY_QUESTIONS.length, `status=${r2.status} count=${r2.data.questions?.length}`)
+
+  const r3 = await req('/auth/security-questions?username=no_user_x9')
+  record('边界-不存在用户获取密保问题应404', r3.status === 404, `status=${r3.status}`)
+
+  const r4 = await req('/auth/security-questions', { method: 'POST', headers: AUTH, body: { currentPassword: 'wrongpass', questions: SECURITY_QUESTIONS } })
+  record('边界-设置密保问题需校验当前密码', r4.status === 400, `status=${r4.status} msg=${r4.data.error}`)
+}
+
+// ---------- 11. 重置密码 ----------
+
+{
+  const wrongAnswers = SECURITY_QUESTIONS.map(q => ({ question: q.question, answer: '错误答案' }))
+  const r0 = await req('/auth/reset-password', { method: 'POST', body: { username: TEST_USER, newPassword: 'newpass123', answers: wrongAnswers } })
+  record('边界-密保答案错误应拒绝', r0.status === 400, `status=${r0.status} msg=${r0.data.error}`)
+
+  const r = await req('/auth/reset-password', { method: 'POST', body: { username: TEST_USER, newPassword: 'newpass123', answers: SECURITY_QUESTIONS } })
+  record('通过密保问题重置密码', r.status === 200 && r.data.success, `status=${r.status} msg=${r.data.error || ''}`)
 
   const r2 = await req('/auth/login', { method: 'POST', body: { username: TEST_USER, password: 'newpass123' } })
   record('新密码可登录', r2.status === 200, `status=${r2.status}`)
 
-  const r3 = await req('/auth/reset-password', { method: 'POST', body: { username: 'no_user_x9', newPassword: 'newpass123' } })
+  const r3 = await req('/auth/reset-password', { method: 'POST', body: { username: 'no_user_x9', newPassword: 'newpass123', answers: SECURITY_QUESTIONS } })
   record('边界-不存在用户重置应拒绝', r3.status === 400, `status=${r3.status}`)
+
+  const r4 = await req('/auth/reset-password', { method: 'POST', body: { username: TEST_USER, newPassword: 'newpass123' } })
+  record('边界-未提供密保答案应拒绝', r4.status === 400, `status=${r4.status} msg=${r4.data.error}`)
 }
 
 // ---------- 12. 404 与错误处理 ----------

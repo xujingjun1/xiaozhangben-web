@@ -68,8 +68,12 @@ export const api = {
     request('/auth/register', { method: 'POST', body: JSON.stringify({ username, password }) }),
   login: (username: string, password: string) =>
     request('/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) }),
-  resetPassword: (username: string, newPassword: string) =>
-    request('/auth/reset-password', { method: 'POST', body: JSON.stringify({ username, newPassword }) }),
+  resetPassword: (username: string, newPassword: string, answers: { question: string; answer: string }[]) =>
+    request('/auth/reset-password', { method: 'POST', body: JSON.stringify({ username, newPassword, answers }) }),
+  getSecurityQuestions: (username: string) =>
+    request(`/auth/security-questions?username=${encodeURIComponent(username)}`),
+  setSecurityQuestions: (currentPassword: string, questions: { question: string; answer: string }[]) =>
+    request('/auth/security-questions', { method: 'POST', body: JSON.stringify({ currentPassword, questions }) }),
 
   // Expenses
   getExpenses: () => request('/expenses'),
