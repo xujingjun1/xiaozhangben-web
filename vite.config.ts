@@ -5,7 +5,9 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
   build: {
-    sourcemap: 'hidden',
+    // 关闭 sourcemap：此前 'hidden' 仍会产出 .map 并被同步进发布包，
+    // 导致线上可直接下载 /assets/*.js.map 拿到完整源码（实测 200 / 860KB）
+    sourcemap: false,
   },
   plugins: [
     vue(),

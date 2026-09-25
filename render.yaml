@@ -9,11 +9,10 @@ services:
     envVars:
     - key: PORT
       value: 8080
-    - key: TENCENT_SECRET_ID
-      sync: false
-    - key: TENCENT_SECRET_KEY
-      sync: false
+    # TENCENT_SECRET_ID/KEY 已移除：早期腾讯云 OCR 方案残留，代码中无引用
     - key: BAIDU_OCR_API_KEY
       sync: false
     - key: BAIDU_OCR_SECRET_KEY
+      sync: false
+    - key: ADMIN_USER_IDS
       sync: false

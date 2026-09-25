@@ -65,7 +65,11 @@ const trainingInfo = computed(() => getTrainingStats())
 
 async function save() {
   const num = parseFloat(amount.value)
-  if (!num || num <= 0) return
+  // 此前这里是静默 return：金额为空或为 0 时点了保存毫无反应，用户不知道为什么
+  if (!num || num <= 0) {
+    errorMsg.value = '请输入大于 0 的金额'
+    return
+  }
   errorMsg.value = ''
 
   const expense: Expense = {

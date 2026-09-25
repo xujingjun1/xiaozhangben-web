@@ -104,8 +104,13 @@ function loadDB() {
     db = JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'))
   }
   // 确保新字段存在
-  if (!db.ratings) db.ratings = []
-  if (!db.feedbacks) db.feedbacks = []
+  // 兜底所有顶层字段：db.json 若被外部改坏（缺字段），
+  // 后面 db.expenses.push(...) 之类会直接 TypeError 导致请求挂死
+  if (!Array.isArray(db.users)) db.users = []
+  if (!Array.isArray(db.expenses)) db.expenses = []
+  if (!Array.isArray(db.budgets)) db.budgets = []
+  if (!Array.isArray(db.ratings)) db.ratings = []
+  if (!Array.isArray(db.feedbacks)) db.feedbacks = []
   return db
 }
 
@@ -273,71 +278,29 @@ app.get('/api/health', (req, res) => {
 // 注册
 app.post('/api/auth/register', authRateLimit, (req, res) => {
   const { username, password } = req.body
-  console.log(`\n[注册请求] 昵称: "${username}", 密码长度: ${password?.length || 0}`)
-
-  if (!username || username.trim().length < 1) {
-    console.log('[注册失败] 昵称为空')
-    return res.status(400).json({ error: '请输入昵称' })
-  }
-  if (!password || password.length < 6) {
-    console.log(`[注册失败] 密码不足6位, 实际: ${password?.length || 0}`)
-    return res.status(400).json({ error: '密码至少6位' })
-  }
-
+  // 注意：不要在日志中输出密码（哪怕是长度），也不要输出用户 ID
+  if (!username || username.trim().length < 1) return res.status(400).json({ error: '请输入昵称' })
+  if (!password || password.length < 6) return res.status(400).json({ error: '密码至少6位' })
   const db = loadDB()
-  console.log(`[注册] 数据库用户数: ${db.users.length}`)
-
-  const existing = db.users.find(u => u.username === username)
-  if (existing) {
-    console.log(`[注册失败] 昵称 "${username}" 已存在, ID: ${existing.id}`)
-    return res.status(400).json({ error: '该昵称已被注册' })
-  }
-
-  const user = {
-    id: genId(),
-    username: username.trim(),
-    password: hashPassword(password),
-    nickname: username.trim(),
-    createdAt: new Date().toISOString(),
-  }
-
+  if (db.users.find(u => u.username === username)) return res.status(400).json({ error: '该昵称已被注册' })
+  const user = { id: genId(), username: username.trim(), password: hashPassword(password), nickname: username.trim(), createdAt: new Date().toISOString() }
   db.users.push(user)
   saveDB(db)
-
-  console.log(`[注册成功] ID: ${user.id}, 昵称: ${user.username}, 新用户数: ${db.users.length}`)
   res.json({ success: true, user: { id: user.id, username: user.username, nickname: user.nickname } })
 })
 
 // 登录
 app.post('/api/auth/login', authRateLimit, (req, res) => {
   const { username, password } = req.body
-  console.log(`\n[登录请求] 昵称: "${username}", 密码长度: ${password?.length || 0}`)
-
-  if (!username || !password) {
-    console.log(`[登录失败] 参数不完整, username: ${!!username}, password: ${!!password}`)
-    return res.status(400).json({ error: '请填写完整信息' })
-  }
-
+  if (!username || !password) return res.status(400).json({ error: '请填写完整信息' })
   const db = loadDB()
   const user = db.users.find(u => u.username === username)
-  if (!user) {
-    console.log(`[登录失败] 未找到用户 "${username}"`)
-    return res.status(400).json({ error: '账号或密码错误' })
-  }
-
-  if (!verifyPassword(password, user.password)) {
-    console.log(`[登录失败] 密码不匹配`)
-    return res.status(400).json({ error: '账号或密码错误' })
-  }
-
+  if (!user || !verifyPassword(password, user.password)) return res.status(400).json({ error: '账号或密码错误' })
   // 旧版无盐哈希自动升级为 scrypt
   if (isLegacyHash(user.password)) {
     user.password = hashPassword(password)
     saveDB(db)
-    console.log(`[登录] 用户 "${username}" 密码哈希已自动升级为 scrypt`)
   }
-
-  console.log(`[登录成功] ID: ${user.id}, 昵称: ${user.username}`)
   res.json({ success: true, user: { id: user.id, username: user.username, nickname: user.nickname } })
 })
 
@@ -601,14 +564,13 @@ app.post('/api/profile', authMiddleware, (req, res) => {
     nickname: nickname ?? user.profile?.nickname ?? '',
     avatar: avatar ?? user.profile?.avatar ?? '',
   }
-  
+
   // 同步更新用户昵称
   if (nickname !== undefined) {
     user.nickname = nickname
   }
-  
+
   saveDB(db)
-  console.log(`[资料更新] ${user.username}:`, { ...user.profile, avatar: user.avatar ? '(有头像)' : '' })
   res.json({ success: true, profile: user.profile, nickname: user.nickname })
 })
 
@@ -633,15 +595,14 @@ async function getBaiduAccessToken(apiKey, secretKey) {
   if (baiduAccessToken && Date.now() < baiduTokenExpiry) {
     return baiduAccessToken
   }
-  
+
   const url = `https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=${apiKey}&client_secret=${secretKey}`
   const res = await fetch(url, { method: 'POST' })
   const data = await res.json()
-  
+
   if (data.access_token) {
     baiduAccessToken = data.access_token
     baiduTokenExpiry = Date.now() + 25 * 24 * 60 * 60 * 1000
-    console.log('[百度OCR] access_token 获取成功')
     return baiduAccessToken
   } else {
     throw new Error(data.error_description || '获取 access_token 失败')
@@ -652,44 +613,42 @@ async function getBaiduAccessToken(apiKey, secretKey) {
 app.post('/api/ocr/baidu', authMiddleware, ocrRateLimit, async (req, res) => {
   const { image, type = 'accurate' } = req.body
   let { apiKey, secretKey } = req.body
-  
+
   // 支持从服务端环境变量回退
   if (!apiKey) apiKey = process.env.BAIDU_OCR_API_KEY || ''
   if (!secretKey) secretKey = process.env.BAIDU_OCR_SECRET_KEY || ''
-  
+
   if (!image) {
     return res.status(400).json({ error: '缺少图片数据' })
   }
   if (!apiKey || !secretKey) {
     return res.status(400).json({ error: '未配置百度 OCR 密钥' })
   }
-  
+
   try {
-    console.log(`[百度OCR] 开始识别, 类型: ${type}, 图片大小: ${Math.round(image.length / 1024)}KB`)
-    
+
     const token = await getBaiduAccessToken(apiKey, secretKey)
-    
+
     // type: standard(标准版) 或 accurate(高精度版)
     const apiUrl = type === 'accurate'
       ? `https://aip.baidubce.com/rest/2.0/ocr/v1/accurate_basic?access_token=${token}`
       : `https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic?access_token=${token}`
-    
+
     const ocrRes = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: `image=${encodeURIComponent(image)}`,
     })
-    
+
     const ocrData = await ocrRes.json()
-    
+
     if (ocrData.error_code) {
       console.error(`[百度OCR] 识别失败: ${ocrData.error_code} - ${ocrData.error_msg}`)
       return res.status(400).json({ error: `百度OCR错误: ${ocrData.error_msg}` })
     }
-    
+
     const text = (ocrData.words_result || []).map(item => item.words).join('\n')
-    console.log(`[百度OCR] 识别成功, 共 ${ocrData.words_result?.length || 0} 行, ${text.length} 字符`)
-    
+
     res.json({
       success: true,
       text,
@@ -718,10 +677,8 @@ app.post('/api/ocr/verify', authMiddleware, ocrRateLimit, async (req, res) => {
 app.get('/api/ocr/config', (req, res) => {
   const apiKey = process.env.BAIDU_OCR_API_KEY || '';
   const secretKey = process.env.BAIDU_OCR_SECRET_KEY || '';
-  res.json({
-    configured: !!(apiKey && secretKey),
-    apiKey: apiKey ? apiKey.slice(0, 6) + '***' : '',
-  });
+  // 只返回是否已配置，不回显任何密钥片段（此接口无鉴权，回显等于公开泄露）
+  res.json({ configured: !!(apiKey && secretKey) });
 });
 
 // ========== RATINGS ==========
@@ -743,7 +700,6 @@ app.post('/api/ratings', authMiddleware, (req, res) => {
 
   db.ratings.push(newRating)
   saveDB(db)
-  console.log(`[评分] 用户 ${req.userId} 评分: ${rating}星`)
   res.json({ success: true, id: newRating.id })
 })
 
@@ -751,12 +707,12 @@ app.post('/api/ratings', authMiddleware, (req, res) => {
 app.get('/api/ratings', authMiddleware, (req, res) => {
   const db = loadDB()
   const ratings = db.ratings.filter(r => r.userId === req.userId)
-  
+
   // 计算平均分
   const avg = ratings.length > 0 
     ? (ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length).toFixed(1)
     : 0
-  
+
   res.json({
     ratings,
     total: ratings.length,
@@ -786,7 +742,6 @@ app.post('/api/feedbacks', authMiddleware, (req, res) => {
 
   db.feedbacks.push(newFeedback)
   saveDB(db)
-  console.log(`[反馈] 用户 ${req.userId} 提交${type}反馈`)
   res.json({ success: true, id: newFeedback.id })
 })
 

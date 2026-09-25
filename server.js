@@ -37,10 +37,12 @@ app.use(cors({ origin: true, credentials: true }))
 app.use(express.json({ limit: '10mb' }))
 
 // ========== ENV VALIDATION ==========
-const requiredEnvVars = ['TENCENT_SECRET_ID', 'TENCENT_SECRET_KEY']
-const missing = requiredEnvVars.filter(k => !process.env[k])
+// 只校验代码中真正会读取的变量。此前校验的是 TENCENT_SECRET_ID/KEY，
+// 那是早期腾讯云 OCR 方案留下的，代码里已无任何引用，每次启动都会打印误导性告警。
+const optionalEnvVars = ['BAIDU_OCR_API_KEY', 'BAIDU_OCR_SECRET_KEY', 'ADMIN_USER_IDS']
+const missing = optionalEnvVars.filter(k => !process.env[k])
 if (missing.length > 0) {
-  console.warn(`[WARN] Missing environment variables: ${missing.join(', ')}. Some features may not work.`)
+  console.info(`[INFO] 未配置可选环境变量: ${missing.join(', ')}（不影响核心功能，OCR 将不可用）`)
 }
 
 // ========== FILE STORAGE ==========
@@ -107,8 +109,13 @@ function loadDB() {
     if (!restoreFromBackup()) throw e
     db = JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'))
   }
-  if (!db.ratings) db.ratings = []
-  if (!db.feedbacks) db.feedbacks = []
+  // 兜底所有顶层字段：db.json 若被外部改坏（缺字段），
+  // 后面 db.expenses.push(...) 之类会直接 TypeError 导致请求挂死
+  if (!Array.isArray(db.users)) db.users = []
+  if (!Array.isArray(db.expenses)) db.expenses = []
+  if (!Array.isArray(db.budgets)) db.budgets = []
+  if (!Array.isArray(db.ratings)) db.ratings = []
+  if (!Array.isArray(db.feedbacks)) db.feedbacks = []
   return db
 }
 
@@ -571,7 +578,8 @@ app.get('/api/feedbacks/all', authMiddleware, (req, res) => {
 app.get('/api/ocr/config', (req, res) => {
   const apiKey = process.env.BAIDU_OCR_API_KEY || ''
   const secretKey = process.env.BAIDU_OCR_SECRET_KEY || ''
-  res.json({ configured: !!(apiKey && secretKey), apiKey: apiKey ? apiKey.slice(0, 6) + '***' : '' })
+  // 只返回是否已配置，不回显任何密钥片段（此接口无鉴权，回显等于公开泄露）
+  res.json({ configured: !!(apiKey && secretKey) })
 })
 
 let baiduAccessToken = null
@@ -628,6 +636,15 @@ app.post('/api/ocr/verify', authMiddleware, ocrRateLimit, async (req, res) => {
 // ========== API 404 ==========
 app.use('/api', (req, res) => {
   res.status(404).json({ error: '接口不存在' })
+})
+
+// ========== BLOCK SOURCEMAP ==========
+// 构建已关闭 sourcemap，但历史产物留下的 .map 仍躺在发布目录里：
+// 部署平台是增量覆盖式更新，不会删除我们没再上传的文件，所以光改构建配置清不掉。
+// 这里从服务端统一拒绝，等于把已泄露的那批也堵上。
+app.use((req, res, next) => {
+  if (req.path.endsWith('.map')) return res.status(404).end()
+  next()
 })
 
 // ========== SERVE FRONTEND ==========

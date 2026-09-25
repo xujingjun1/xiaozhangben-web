@@ -16,12 +16,15 @@ const top6 = computed(() => sorted.value.slice(0, 6))
 
 const pieStyle = computed(() => {
   if (!top6.value.length) return {}
+  // 防除零：分类金额全为 0 时 total 为 0，直接相除会得到 NaN%，
+  // 写进 conic-gradient 会让整个圆环渲染不出来（模板里已用 total > 0 守卫，这里保持一致）
+  const safeTotal = total.value > 0 ? total.value : 1
   let cumulative = 0
   const stops: string[] = []
   top6.value.forEach(([name, amount]) => {
     const info = getCategoryInfo(name)
     const start = cumulative
-    cumulative += (amount / total.value) * 100
+    cumulative += (amount / safeTotal) * 100
     stops.push(`${info.color} ${start}% ${cumulative}%`)
   })
   if (cumulative < 100) stops.push(`#F0EDFF ${cumulative}% 100%`)

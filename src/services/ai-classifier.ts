@@ -439,7 +439,8 @@ export function classifyTop(text: string): string {
 // 提交用户纠正（反馈学习）
 export function submitCorrection(text: string, correctCategory: string) {
   saveFeedback(text, correctCategory)
-  console.log(`[AI分类] 用户纠正: "${text}" → ${correctCategory}`)
+  // 仅在开发环境输出：text 是用户输入的原始账单描述，属用户内容
+  if (import.meta.env.DEV) console.log(`[AI分类] 用户纠正: "${text}" → ${correctCategory}`)
 }
 
 // 获取训练统计

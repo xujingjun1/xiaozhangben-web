@@ -38,7 +38,8 @@ export function useImageOcr() {
       if (data.configured) localStorage.setItem('ocr_server_configured', 'true')
       else localStorage.removeItem('ocr_server_configured')
     } catch (e) {
-      console.log('[OCR] 无法获取服务端 OCR 配置:', e)
+      // 仅在开发环境输出：OCR 未配置是常态（服务端未填密钥），不必打扰用户控制台
+      if (import.meta.env.DEV) console.log('[OCR] 无法获取服务端 OCR 配置:', e)
     }
   }
 

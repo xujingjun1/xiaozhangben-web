@@ -1,5 +1,12 @@
 import dayjs from 'dayjs'
 
+// 调试日志：仅在开发环境输出。
+// 此前这些日志会打进生产包，逐条打印用户账单（金额/分类/描述/日期），
+// 对一款有隐私说明的记账应用不合适，故统一收口。
+const DEV = import.meta.env.DEV
+const debugLog = (...args: unknown[]) => { if (DEV) console.log(...args) }
+const debugWarn = (...args: unknown[]) => { if (DEV) console.warn(...args) }
+
 export type ImportMode = 'image' | 'csv' | 'json'
 
 export interface ParsedExpense {
@@ -239,7 +246,7 @@ export function parseOCRText(text: string): ParsedExpense[] {
   // 先清洗OCR文本
   const cleanedText = cleanOCRText(text)
   const lines = cleanedText.split('\n').map(l => l.trim()).filter(Boolean)
-  console.log(`[导入-解析] OCR文本行数: ${lines.length}`)
+  debugLog(`[导入-解析] OCR文本行数: ${lines.length}`)
   
   const results: ParsedExpense[] = []
   const seenAmounts = new Set<string>() // 用于去重
@@ -310,9 +317,9 @@ export function parseCSV(text: string): ParsedExpense[] {
   // 移除BOM字符（微信/支付宝导出的CSV常带BOM）
   const cleanText = text.replace(/^\uFEFF/, '')
   const lines = cleanText.split('\n').map(l => l.trim()).filter(Boolean)
-  console.log(`[导入-CSV] 总行数: ${lines.length}`)
+  debugLog(`[导入-CSV] 总行数: ${lines.length}`)
   if (lines.length < 2) {
-    console.warn(`[导入-CSV] 行数不足, 终止解析`)
+    debugWarn(`[导入-CSV] 行数不足, 终止解析`)
     return []
   }
 
@@ -321,11 +328,11 @@ export function parseCSV(text: string): ParsedExpense[] {
   const delimiter = firstLine.includes('\t') ? '\t' 
     : firstLine.includes(';') ? ';' 
     : ','
-  console.log(`[导入-CSV] 检测到分隔符: ${delimiter === '\t' ? 'TAB' : delimiter === ';' ? '分号' : '逗号'}`)
+  debugLog(`[导入-CSV] 检测到分隔符: ${delimiter === '\t' ? 'TAB' : delimiter === ';' ? '分号' : '逗号'}`)
 
   // 检测表头并映射列
   const headers = firstLine.split(delimiter).map(h => h.replace(/"/g, '').trim())
-  console.log(`[导入-CSV] 表头: [${headers.join(', ')}]`)
+  debugLog(`[导入-CSV] 表头: [${headers.join(', ')}]`)
 
   // 更智能的列匹配（支持更多格式）
   const findCol = (keywords: string[]) => {
@@ -340,7 +347,7 @@ export function parseCSV(text: string): ParsedExpense[] {
   const colMethod = findCol(['支付方式', '支付', '方式', 'payment', '付款方式'])
   const colCategory = findCol(['分类', '类别', 'category', '交易分类'])
 
-  console.log(`[导入-CSV] 列映射 - 时间:${colTime}, 描述:${colDesc}, 收支:${colType}, 金额:${colAmount}, 支付方式:${colMethod}, 分类:${colCategory}`)
+  debugLog(`[导入-CSV] 列映射 - 时间:${colTime}, 描述:${colDesc}, 收支:${colType}, 金额:${colAmount}, 支付方式:${colMethod}, 分类:${colCategory}`)
 
   const results: ParsedExpense[] = []
   let skippedIncome = 0
@@ -398,7 +405,7 @@ export function parseCSV(text: string): ParsedExpense[] {
     results.push(createExpense(amount, category, desc, date))
   }
 
-  console.log(`[导入-CSV] 解析完成, 有效记录: ${results.length}, 跳过收入: ${skippedIncome}, 跳过金额为0: ${skippedZero}, 跳过无效: ${skippedInvalid}`)
+  debugLog(`[导入-CSV] 解析完成, 有效记录: ${results.length}, 跳过收入: ${skippedIncome}, 跳过金额为0: ${skippedZero}, 跳过无效: ${skippedInvalid}`)
   return results
 }
 
@@ -441,9 +448,9 @@ export function parseCSVLine(line: string, delimiter: string = ','): string[] {
 
 export function parseJSONData(data: any): ParsedExpense[] {
   const items = Array.isArray(data) ? data : (data.expenses || data.data || [])
-  console.log(`[导入-JSON] 原始数据类型: ${Array.isArray(data) ? 'Array' : typeof data}, 解析后记录数: ${items.length}`)
+  debugLog(`[导入-JSON] 原始数据类型: ${Array.isArray(data) ? 'Array' : typeof data}, 解析后记录数: ${items.length}`)
   if (!Array.isArray(items)) {
-    console.warn(`[导入-JSON] 无法解析为数组, 终止`)
+    debugWarn(`[导入-JSON] 无法解析为数组, 终止`)
     return []
   }
 
@@ -453,11 +460,11 @@ export function parseJSONData(data: any): ParsedExpense[] {
     const description = item.description || item.name || item.desc || '导入记录'
     const date = item.date || item.time || item.created_at || todayStr()
     const tags = Array.isArray(item.tags) ? item.tags : []
-    console.log(`  [${i + 1}] 金额: ¥${amount}, 分类: ${category}, 描述: ${description}, 日期: ${date}`)
+    debugLog(`  [${i + 1}] 金额: ¥${amount}, 分类: ${category}, 描述: ${description}, 日期: ${date}`)
     return createExpense(amount, category, description, parseDate(date), tags)
   }).filter((e: ParsedExpense) => e.amount > 0)
   
-  console.log(`[导入-JSON] 解析完成, 有效记录: ${results.length}, 无效(金额为0): ${items.length - results.length}`)
+  debugLog(`[导入-JSON] 解析完成, 有效记录: ${results.length}, 无效(金额为0): ${items.length - results.length}`)
   return results
 }
 

@@ -7,17 +7,6 @@ export function formatDate(date: string | Date): string {
   return dayjs(date).format('YYYY-MM-DD')
 }
 
-export function formatDateShort(date: string | Date): string {
-  const now = dayjs()
-  const target = dayjs(date)
-  const diff = now.diff(target.startOf('day'), 'day')
-  if (diff === 0) return '今天'
-  if (diff === 1) return '昨天'
-  if (diff === 2) return '前天'
-  if (now.year() === target.year()) return target.format('M月D日')
-  return target.format('YYYY年M月D日')
-}
-
 export function formatMoney(amount: number): string {
   if (amount === Math.round(amount) && amount < 10000) return `¥${amount}`
   return `¥${amount.toFixed(2)}`
