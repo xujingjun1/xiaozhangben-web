@@ -45,3 +45,9 @@ qa-screenshots/
 .workbuddy/
 .git-rewrite/
 .last-git-backup.txt
+# 本地推送辅助脚本（依赖本机代理端口与系统 Git，不入库）
+push-to-github.bat
+
+# 发布用 APK：唯一来源是 android 构建产物，由 scripts/prepare-deploy.mjs 同步。
+# 曾入库一份 22MB 的手工副本，被 Vite 拷进 dist 后导致旧包上线（2026-09-25 修）。
+public/app-latest.apk

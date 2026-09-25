@@ -13,7 +13,8 @@
     "check": "vue-tsc -b",
     "lint": "eslint . --ext .ts,.vue",
     "lint:fix": "eslint . --ext .ts,.vue --fix",
-    "test": "node scripts/run-tests.mjs"
+    "test": "node scripts/run-tests.mjs",
+    "deploy:prepare": "node scripts/prepare-deploy.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.2",
